@@ -71,6 +71,13 @@ class AppTextStyles {
     height: 1.5,
   );
 
+  static const TextStyle bodyBold = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+    height: 1.5,
+  );
+
   static const TextStyle bodySmall = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w400,

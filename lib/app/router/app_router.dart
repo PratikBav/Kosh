@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/route_constants.dart';
 import '../../features/dashboard/view/dashboard_view.dart';
+import '../../features/transactions/view/add_transaction_screen.dart';
+import '../../features/transactions/view/transaction_details_screen.dart';
 import '../../features/transactions/view/transactions_view.dart';
 import '../../features/goals/view/goals_view.dart';
 import '../../features/analytics/view/analytics_view.dart';
@@ -60,6 +62,29 @@ class AppRouter {
                 path: RouteConstants.transactionsPath,
                 name: RouteConstants.transactions,
                 builder: (context, state) => const TransactionsView(),
+                routes: [
+                  GoRoute(
+                    path: RouteConstants.addTransactionPath,
+                    name: RouteConstants.addTransaction,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      // Pass transaction ID if editing
+                      final id = state.uri.queryParameters['id'];
+                      return AddTransactionScreen(
+                        transactionId: id != null ? int.tryParse(id) : null,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: RouteConstants.transactionDetailsPath,
+                    name: RouteConstants.transactionDetails,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['id']!);
+                      return TransactionDetailsScreen(transactionId: id);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

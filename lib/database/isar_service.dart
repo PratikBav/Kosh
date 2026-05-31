@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../core/constants/app_constants.dart';
+import 'collections/transaction_collection.dart';
 
 /// Manages the Isar database lifecycle.
 ///
@@ -45,21 +46,8 @@ class IsarService {
   }
 
   /// Collection schemas to register.
-  ///
-  /// Add new collection schemas here as features are built:
-  /// ```dart
-  /// static final List<CollectionSchema<dynamic>> _schemas = [
-  ///   ExpenseSchema,
-  ///   IncomeSchema,
-  ///   GoalSchema,
-  ///   GoalContributionSchema,
-  ///   InvestmentSchema,
-  ///   AchievementSchema,
-  ///   SettingsSchema,
-  /// ];
-  /// ```
   static final List<CollectionSchema<dynamic>> _schemas = [
-    // Collections will be added here as models are created.
+    TransactionCollectionSchema,
   ];
 
   /// Closes the database connection.
