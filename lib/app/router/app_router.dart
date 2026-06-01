@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/route_constants.dart';
+import '../../features/analytics/view/analytics_screen.dart';
 import '../../features/dashboard/view/dashboard_screen.dart';
 import '../../features/transactions/view/add_transaction_screen.dart';
 import '../../features/transactions/view/transaction_details_screen.dart';
@@ -10,7 +11,6 @@ import '../../features/goals/view/goals_view.dart';
 import '../../features/goals/view/add_goal_screen.dart';
 import '../../features/goals/view/goal_details_screen.dart';
 import '../../features/goals/view/add_contribution_screen.dart';
-import '../../features/analytics/view/analytics_view.dart';
 import '../../features/settings/view/settings_view.dart';
 import 'navigation_shell.dart';
 
@@ -139,7 +139,7 @@ class AppRouter {
               GoRoute(
                 path: RouteConstants.analyticsPath,
                 name: RouteConstants.analytics,
-                builder: (context, state) => const AnalyticsView(),
+                builder: (context, state) => const AnalyticsScreen(),
               ),
             ],
           ),
