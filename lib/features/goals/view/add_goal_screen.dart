@@ -137,7 +137,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               DropdownButtonFormField<GoalCategory>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   prefixIcon: Icon(Icons.category_rounded),

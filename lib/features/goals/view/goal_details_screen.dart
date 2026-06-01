@@ -65,6 +65,7 @@ class GoalDetailsScreen extends ConsumerWidget {
       floatingActionButton: goal.isCompleted
           ? null
           : FloatingActionButton.extended(
+              heroTag: 'goal_details_fab_${goal.id}',
               onPressed: () => context.goNamed(
                 RouteConstants.addContribution,
                 pathParameters: {'id': goal.id.toString()},

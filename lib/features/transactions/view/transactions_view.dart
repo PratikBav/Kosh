@@ -149,6 +149,7 @@ class TransactionsView extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'transactions_fab',
         onPressed: () => context.pushNamed(RouteConstants.addTransaction),
         child: const Icon(Icons.add_rounded),
       ),

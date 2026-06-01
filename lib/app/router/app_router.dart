@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/route_constants.dart';
-import '../../features/dashboard/view/dashboard_view.dart';
+import '../../features/dashboard/view/dashboard_screen.dart';
 import '../../features/transactions/view/add_transaction_screen.dart';
 import '../../features/transactions/view/transaction_details_screen.dart';
 import '../../features/transactions/view/transactions_view.dart';
@@ -52,7 +52,7 @@ class AppRouter {
               GoRoute(
                 path: RouteConstants.dashboardPath,
                 name: RouteConstants.dashboard,
-                builder: (context, state) => const DashboardView(),
+                builder: (context, state) => const DashboardScreen(),
               ),
             ],
           ),

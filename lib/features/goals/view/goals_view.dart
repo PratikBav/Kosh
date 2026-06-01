@@ -23,6 +23,7 @@ class GoalsView extends ConsumerWidget {
         title: const Text('Financial Goals'),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'goals_fab',
         onPressed: () => context.goNamed(RouteConstants.addGoal),
         child: const Icon(Icons.add_rounded),
       ),

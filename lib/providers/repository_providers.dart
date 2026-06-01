@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/repositories/transaction_repository.dart';
 import '../database/repositories/goals_repository.dart';
+import '../features/dashboard/repository/dashboard_repository.dart';
 import 'database_providers.dart';
 
 /// Provides the [TransactionRepository].
@@ -14,4 +15,13 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
 final goalsRepositoryProvider = Provider<GoalsRepository>((ref) {
   final isar = ref.watch(isarProvider);
   return GoalsRepository(isar);
+});
+
+final dashboardRepositoryProvider = Provider<DashboardRepository>((ref) {
+  final txRepo = ref.watch(transactionRepositoryProvider);
+  final goalsRepo = ref.watch(goalsRepositoryProvider);
+  return DashboardRepository(
+    transactionsRepository: txRepo,
+    goalsRepository: goalsRepo,
+  );
 });
