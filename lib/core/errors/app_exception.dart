@@ -14,6 +14,11 @@ class AppException implements Exception {
 
   @override
   String toString() => 'AppException($code): $message';
+
+  factory AppException.from(dynamic exception) {
+    if (exception is AppException) return exception;
+    return AppException(message: exception.toString());
+  }
 }
 
 /// Thrown when a database operation fails.

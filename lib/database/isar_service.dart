@@ -3,6 +3,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../core/constants/app_constants.dart';
 import 'collections/transaction_collection.dart';
+import 'collections/goal_collection.dart';
+import 'collections/contribution_collection.dart';
 
 /// Manages the Isar database lifecycle.
 ///
@@ -48,6 +50,8 @@ class IsarService {
   /// Collection schemas to register.
   static final List<CollectionSchema<dynamic>> _schemas = [
     TransactionCollectionSchema,
+    GoalCollectionSchema,
+    ContributionCollectionSchema,
   ];
 
   /// Closes the database connection.

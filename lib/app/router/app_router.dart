@@ -7,6 +7,9 @@ import '../../features/transactions/view/add_transaction_screen.dart';
 import '../../features/transactions/view/transaction_details_screen.dart';
 import '../../features/transactions/view/transactions_view.dart';
 import '../../features/goals/view/goals_view.dart';
+import '../../features/goals/view/add_goal_screen.dart';
+import '../../features/goals/view/goal_details_screen.dart';
+import '../../features/goals/view/add_contribution_screen.dart';
 import '../../features/analytics/view/analytics_view.dart';
 import '../../features/settings/view/settings_view.dart';
 import 'navigation_shell.dart';
@@ -97,6 +100,34 @@ class AppRouter {
                 path: RouteConstants.goalsPath,
                 name: RouteConstants.goals,
                 builder: (context, state) => const GoalsView(),
+                routes: [
+                  GoRoute(
+                    path: RouteConstants.addGoalPath,
+                    name: RouteConstants.addGoal,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const AddGoalScreen(),
+                  ),
+                  GoRoute(
+                    path: RouteConstants.goalDetailsPath,
+                    name: RouteConstants.goalDetails,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['id']!);
+                      return GoalDetailsScreen(goalId: id);
+                    },
+                    routes: [
+                      GoRoute(
+                        path: RouteConstants.addContributionPath,
+                        name: RouteConstants.addContribution,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) {
+                          final id = int.parse(state.pathParameters['id']!);
+                          return AddContributionScreen(goalId: id);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
