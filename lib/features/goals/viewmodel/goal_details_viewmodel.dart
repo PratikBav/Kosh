@@ -6,6 +6,7 @@ import '../../../../database/collections/contribution_collection.dart';
 import '../../../../database/repositories/goals_repository.dart';
 import '../../../../providers/repository_providers.dart';
 import '../../../../providers/service_providers.dart';
+import '../../gamification/viewmodel/gamification_viewmodel.dart';
 import 'goal_details_state.dart';
 import 'goals_viewmodel.dart';
 
@@ -14,10 +15,12 @@ final goalDetailsViewModelProvider = StateNotifierProvider.family<
     GoalDetailsViewModel, GoalDetailsState, int>((ref, goalId) {
   final repository = ref.watch(goalsRepositoryProvider);
   final notificationService = ref.watch(notificationServiceProvider);
+  final gamification = ref.read(gamificationViewModelProvider.notifier);
   return GoalDetailsViewModel(
     goalId,
     repository,
     notificationService,
+    gamification,
     ref, // Used to trigger a refresh on the main goals list
   );
 });
@@ -28,6 +31,7 @@ class GoalDetailsViewModel extends StateNotifier<GoalDetailsState> {
     this._goalId,
     this._repository,
     this._notificationService,
+    this._gamification,
     this._ref,
   ) : super(const GoalDetailsState()) {
     loadDetails();
@@ -36,6 +40,7 @@ class GoalDetailsViewModel extends StateNotifier<GoalDetailsState> {
   final int _goalId;
   final GoalsRepository _repository;
   final NotificationService _notificationService;
+  final GamificationViewModel _gamification;
   final Ref _ref;
 
   /// Loads the specific goal and its contribution history.
@@ -70,9 +75,13 @@ class GoalDetailsViewModel extends StateNotifier<GoalDetailsState> {
       // Refresh the main goals view
       _ref.read(goalsViewModelProvider.notifier).loadGoals();
 
+      // Trigger gamification for contribution
+      await _gamification.logGoalContribution();
+      
       // Check if newly completed
       final isNowCompleted = state.goal?.isCompleted ?? false;
       if (!wasCompleted && isNowCompleted) {
+        await _gamification.logGoalCompleted();
         _notificationService.showNotification(
           id: _goalId,
           title: 'Goal Completed! 🎉',

@@ -8,6 +8,8 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../shared/widgets/loading_indicator.dart';
+import '../../gamification/viewmodel/gamification_viewmodel.dart';
+import '../../gamification/widgets/gamification_banner.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
 import '../widgets/financial_overview_card.dart';
 import '../widgets/goal_progress_card.dart';
@@ -63,6 +65,8 @@ class DashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    GamificationBanner(state: ref.watch(gamificationViewModelProvider)),
+                    const SizedBox(height: AppSpacing.md),
                     FinancialOverviewCard(
                       netSavings: summary.netSavings,
                       income: summary.totalIncome,

@@ -4,6 +4,7 @@ import '../database/repositories/transaction_repository.dart';
 import '../database/repositories/goals_repository.dart';
 import '../features/dashboard/repository/dashboard_repository.dart';
 import '../features/analytics/repository/analytics_repository.dart';
+import '../features/gamification/repository/gamification_repository.dart';
 import 'database_providers.dart';
 
 /// Provides the [TransactionRepository].
@@ -34,4 +35,9 @@ final analyticsRepositoryProvider = Provider<AnalyticsRepository>((ref) {
     transactionsRepository: txRepo,
     goalsRepository: goalsRepo,
   );
+});
+
+final gamificationRepositoryProvider = Provider<GamificationRepository>((ref) {
+  final isar = ref.watch(isarProvider);
+  return GamificationRepository(isar);
 });

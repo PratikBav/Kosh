@@ -11,6 +11,8 @@ import '../../features/goals/view/goals_view.dart';
 import '../../features/goals/view/add_goal_screen.dart';
 import '../../features/goals/view/goal_details_screen.dart';
 import '../../features/goals/view/add_contribution_screen.dart';
+import '../../features/gamification/view/achievements_screen.dart';
+import '../../features/gamification/view/profile_progress_screen.dart';
 import '../../features/settings/view/settings_view.dart';
 import 'navigation_shell.dart';
 
@@ -154,6 +156,18 @@ class AppRouter {
                 builder: (context, state) => const SettingsView(),
               ),
             ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: RouteConstants.profileProgressPath,
+        name: RouteConstants.profileProgress,
+        builder: (context, state) => const ProfileProgressScreen(),
+        routes: [
+          GoRoute(
+            path: RouteConstants.achievementsPath,
+            name: RouteConstants.achievements,
+            builder: (context, state) => const AchievementsScreen(),
           ),
         ],
       ),

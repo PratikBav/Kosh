@@ -5,22 +5,25 @@ import '../../../../database/repositories/transaction_repository.dart';
 import '../../../../providers/repository_providers.dart';
 import '../models/transaction_category.dart';
 import '../models/transaction_type.dart';
+import '../../gamification/viewmodel/gamification_viewmodel.dart';
 import 'transaction_state.dart';
 
 /// Provider for the TransactionViewModel.
 final transactionViewModelProvider =
     StateNotifierProvider<TransactionViewModel, TransactionState>((ref) {
   final repository = ref.watch(transactionRepositoryProvider);
-  return TransactionViewModel(repository);
+  final gamification = ref.read(gamificationViewModelProvider.notifier);
+  return TransactionViewModel(repository, gamification);
 });
 
 /// ViewModel for managing transactions.
 class TransactionViewModel extends StateNotifier<TransactionState> {
-  TransactionViewModel(this._repository) : super(const TransactionState()) {
+  TransactionViewModel(this._repository, this._gamification) : super(const TransactionState()) {
     loadTransactions();
   }
 
   final TransactionRepository _repository;
+  final GamificationViewModel _gamification;
 
   /// Loads transactions based on the current date range.
   Future<void> loadTransactions() async {
@@ -72,6 +75,7 @@ class TransactionViewModel extends StateNotifier<TransactionState> {
     try {
       await _repository.addTransaction(transaction);
       await loadTransactions();
+      await _gamification.logTransactionActivity();
     } catch (e) {
       state = state.copyWith(errorMessage: 'Failed to add transaction: $e');
     }

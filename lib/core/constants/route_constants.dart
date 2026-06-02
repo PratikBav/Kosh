@@ -27,5 +27,11 @@ class RouteConstants {
   static const String goalDetailsPath = ':id';
   static const String addContributionPath = 'contribute';
   static const String analyticsPath = '/analytics';
+
+  static const String profileProgress = 'profileProgress';
+  static const String profileProgressPath = '/profile-progress';
+
+  static const String achievements = 'achievements';
+  static const String achievementsPath = 'achievements'; // Sub-route
   static const String settingsPath = '/settings';
 }

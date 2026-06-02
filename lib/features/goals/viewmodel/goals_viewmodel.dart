@@ -4,22 +4,25 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../database/collections/goal_collection.dart';
 import '../../../../database/repositories/goals_repository.dart';
 import '../../../../providers/repository_providers.dart';
+import '../../gamification/viewmodel/gamification_viewmodel.dart';
 import 'goals_state.dart';
 
 /// Provider for the [GoalsViewModel].
 final goalsViewModelProvider =
     StateNotifierProvider<GoalsViewModel, GoalsState>((ref) {
   final repository = ref.watch(goalsRepositoryProvider);
-  return GoalsViewModel(repository);
+  final gamification = ref.read(gamificationViewModelProvider.notifier);
+  return GoalsViewModel(repository, gamification);
 });
 
 /// ViewModel managing the global list of goals.
 class GoalsViewModel extends StateNotifier<GoalsState> {
-  GoalsViewModel(this._repository) : super(const GoalsState()) {
+  GoalsViewModel(this._repository, this._gamification) : super(const GoalsState()) {
     loadGoals();
   }
 
   final GoalsRepository _repository;
+  final GamificationViewModel _gamification;
 
   /// Loads all goals from the database.
   Future<void> loadGoals() async {
@@ -40,6 +43,7 @@ class GoalsViewModel extends StateNotifier<GoalsState> {
     try {
       await _repository.createGoal(goal);
       await loadGoals();
+      await _gamification.logGoalCreated();
     } catch (e) {
       state = state.copyWith(error: AppException.from(e).message);
       rethrow;
