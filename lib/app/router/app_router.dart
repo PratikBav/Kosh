@@ -14,6 +14,10 @@ import '../../features/goals/view/add_contribution_screen.dart';
 import '../../features/gamification/view/achievements_screen.dart';
 import '../../features/gamification/view/profile_progress_screen.dart';
 import '../../features/settings/view/settings_view.dart';
+import '../../features/security/view/security_settings_screen.dart';
+
+import '../../features/security/view/backup_screen.dart';
+import '../../features/security/view/privacy_settings_screen.dart';
 import 'navigation_shell.dart';
 
 /// GoRouter configuration for the Kosh application.
@@ -154,6 +158,24 @@ class AppRouter {
                 path: RouteConstants.settingsPath,
                 name: RouteConstants.settings,
                 builder: (context, state) => const SettingsView(),
+                routes: [
+                  GoRoute(
+                    path: RouteConstants.securitySettingsPath,
+                    name: RouteConstants.securitySettings,
+                    builder: (context, state) => const SecuritySettingsScreen(),
+                  ),
+
+                  GoRoute(
+                    path: RouteConstants.backupPath,
+                    name: RouteConstants.backup,
+                    builder: (context, state) => const BackupScreen(),
+                  ),
+                  GoRoute(
+                    path: RouteConstants.privacyPath,
+                    name: RouteConstants.privacy,
+                    builder: (context, state) => const PrivacySettingsScreen(),
+                  ),
+                ],
               ),
             ],
           ),

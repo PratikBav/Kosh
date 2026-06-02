@@ -16,6 +16,10 @@ class RouteConstants {
   static const String addContribution = 'add_contribution';
   static const String analytics = 'analytics';
   static const String settings = 'settings';
+  static const String securitySettings = 'securitySettings';
+
+  static const String backup = 'backup';
+  static const String privacy = 'privacy';
 
   // ── Route Paths ───────────────────────────────────────────────────
   static const String dashboardPath = '/';
@@ -34,4 +38,8 @@ class RouteConstants {
   static const String achievements = 'achievements';
   static const String achievementsPath = 'achievements'; // Sub-route
   static const String settingsPath = '/settings';
+  static const String securitySettingsPath = 'security';
+
+  static const String backupPath = 'backup';
+  static const String privacyPath = 'privacy';
 }

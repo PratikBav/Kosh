@@ -51,7 +51,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'dashboard_fab',
-        onPressed: () => context.goNamed(RouteConstants.addTransaction),
+        onPressed: () => context.pushNamed(RouteConstants.addTransaction),
         child: const Icon(Icons.add_rounded),
       ),
       body: RefreshIndicator(

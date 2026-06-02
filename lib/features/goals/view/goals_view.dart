@@ -24,7 +24,7 @@ class GoalsView extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'goals_fab',
-        onPressed: () => context.goNamed(RouteConstants.addGoal),
+        onPressed: () => context.pushNamed(RouteConstants.addGoal),
         child: const Icon(Icons.add_rounded),
       ),
       body: state.isLoading && state.goals.isEmpty

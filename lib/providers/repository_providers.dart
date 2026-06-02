@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/services/backup_service.dart';
+import '../core/services/security_service.dart';
+import '../features/security/repository/security_repository.dart';
 
 import '../database/repositories/transaction_repository.dart';
 import '../database/repositories/goals_repository.dart';
@@ -40,4 +43,19 @@ final analyticsRepositoryProvider = Provider<AnalyticsRepository>((ref) {
 final gamificationRepositoryProvider = Provider<GamificationRepository>((ref) {
   final isar = ref.watch(isarProvider);
   return GamificationRepository(isar);
+});
+
+final securityServiceProvider = Provider<SecurityService>((ref) {
+  return SecurityService();
+});
+
+final securityRepositoryProvider = Provider<SecurityRepository>((ref) {
+  final isar = ref.watch(isarProvider);
+  final securityService = ref.watch(securityServiceProvider);
+  return SecurityRepository(isar: isar, securityService: securityService);
+});
+
+final backupServiceProvider = Provider<BackupService>((ref) {
+  final isar = ref.watch(isarProvider);
+  return BackupService(isar);
 });
