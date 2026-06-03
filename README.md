@@ -4,7 +4,6 @@
 
 Kosh is a modern, privacy-first personal finance application built using Flutter. It helps users track expenses, manage income, monitor investments, set financial goals, and build healthy financial habits through an engaging gamified experience.
 
-Unlike traditional finance applications, Kosh is designed to work completely offline, ensuring that user data remains private and fully under the user's control.
 
 ---
 
