@@ -16,14 +16,12 @@ Unlike traditional finance applications, Kosh is designed to work completely off
 * Income Tracking
 * Transaction History
 * Category-wise Spending Analysis
-* Monthly Financial Summaries
 
 ### Goal Management
 
 * Create Financial Goals
 * Track Goal Progress
 * Goal Contributions
-* Deadline Tracking
 * Goal Completion Monitoring
 
 ### Analytics Dashboard
