@@ -58,6 +58,11 @@ class NavigationShell extends StatelessWidget {
               label: 'Goals',
             ),
             NavigationDestination(
+              icon: Icon(Icons.auto_awesome_outlined),
+              selectedIcon: Icon(Icons.auto_awesome),
+              label: 'Vision',
+            ),
+            NavigationDestination(
               icon: Icon(Icons.bar_chart_outlined),
               selectedIcon: Icon(Icons.bar_chart_rounded),
               label: 'Analytics',

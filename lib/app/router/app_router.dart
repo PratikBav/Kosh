@@ -18,6 +18,9 @@ import '../../features/security/view/security_settings_screen.dart';
 
 import '../../features/security/view/backup_screen.dart';
 import '../../features/security/view/privacy_settings_screen.dart';
+import '../../features/vision_board/view/vision_board_screen.dart';
+import '../../features/vision_board/view/create_vision_item_screen.dart';
+import '../../features/vision_board/view/vision_item_detail_screen.dart';
 import 'navigation_shell.dart';
 
 /// GoRouter configuration for the Kosh application.
@@ -36,6 +39,8 @@ class AppRouter {
       GlobalKey<NavigatorState>(debugLabel: 'transactions');
   static final _goalsNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'goals');
+  static final _visionBoardNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'vision');
   static final _analyticsNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'analytics');
   static final _settingsNavigatorKey =
@@ -132,6 +137,35 @@ class AppRouter {
                         },
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          // ── Vision Board ──────────────────────────────────────────
+          StatefulShellBranch(
+            navigatorKey: _visionBoardNavigatorKey,
+            routes: [
+              GoRoute(
+                path: RouteConstants.visionBoardPath,
+                name: RouteConstants.visionBoard,
+                builder: (context, state) => const VisionBoardScreen(),
+                routes: [
+                  GoRoute(
+                    path: RouteConstants.createVisionItemPath,
+                    name: RouteConstants.createVisionItem,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const CreateVisionItemScreen(),
+                  ),
+                  GoRoute(
+                    path: RouteConstants.visionItemDetailsPath,
+                    name: RouteConstants.visionItemDetails,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['id']!);
+                      return VisionItemDetailScreen(itemId: id);
+                    },
                   ),
                 ],
               ),

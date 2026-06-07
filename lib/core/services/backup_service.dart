@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../database/collections/transaction_collection.dart';
 import '../../database/collections/goal_collection.dart';
+import '../../database/collections/vision_item_collection.dart';
 
 import '../../features/transactions/models/transaction_category.dart';
 import '../../features/transactions/models/transaction_type.dart';
@@ -25,6 +26,7 @@ class BackupService {
     try {
       final transactions = await isar.transactionCollections.where().findAll();
       final goals = await isar.goalCollections.where().findAll();
+      final visions = await isar.visionItemCollections.where().findAll();
 
       // Convert data to Maps
       final data = {
@@ -46,6 +48,17 @@ class BackupService {
           'priority': g.priority.name,
           'category': g.category.name,
           'isCompleted': g.isCompleted,
+        }).toList(),
+        'visions': visions.map((v) => {
+          'title': v.title,
+          'description': v.description,
+          'imagePath': v.imagePath,
+          'quote': v.quote,
+          'goalId': v.goalId,
+          'category': v.category.name,
+          'isPinned': v.isPinned,
+          'createdAt': v.createdAt.toIso8601String(),
+          'updatedAt': v.updatedAt.toIso8601String(),
         }).toList(),
       };
 
@@ -92,6 +105,7 @@ class BackupService {
           // Clear current data
           await isar.transactionCollections.clear();
           await isar.goalCollections.clear();
+          await isar.visionItemCollections.clear();
 
           // Import Transactions
           if (data['transactions'] != null) {
@@ -122,6 +136,22 @@ class BackupService {
               ..updatedAt = DateTime.now()
             ).toList();
             await isar.goalCollections.putAll(goalsList);
+          }
+
+          // Import Visions
+          if (data['visions'] != null) {
+            final visionsList = (data['visions'] as List).map((v) => VisionItemCollection()
+              ..title = v['title']
+              ..description = v['description']
+              ..imagePath = v['imagePath']
+              ..quote = v['quote']
+              ..goalId = v['goalId']
+              ..category = VisionCategory.values.firstWhere((e) => e.name == v['category'])
+              ..isPinned = v['isPinned']
+              ..createdAt = DateTime.parse(v['createdAt'])
+              ..updatedAt = DateTime.parse(v['updatedAt'])
+            ).toList();
+            await isar.visionItemCollections.putAll(visionsList);
           }
         });
         

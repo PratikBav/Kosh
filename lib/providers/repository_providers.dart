@@ -8,6 +8,7 @@ import '../database/repositories/goals_repository.dart';
 import '../features/dashboard/repository/dashboard_repository.dart';
 import '../features/analytics/repository/analytics_repository.dart';
 import '../features/gamification/repository/gamification_repository.dart';
+import '../features/vision_board/repository/vision_board_repository.dart';
 import 'database_providers.dart';
 
 /// Provides the [TransactionRepository].
@@ -58,4 +59,9 @@ final securityRepositoryProvider = Provider<SecurityRepository>((ref) {
 final backupServiceProvider = Provider<BackupService>((ref) {
   final isar = ref.watch(isarProvider);
   return BackupService(isar);
+});
+
+final visionBoardRepositoryProvider = Provider<VisionBoardRepository>((ref) {
+  final isar = ref.watch(isarProvider);
+  return VisionBoardRepository(isar);
 });

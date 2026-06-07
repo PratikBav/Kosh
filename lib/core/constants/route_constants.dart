@@ -17,6 +17,9 @@ class RouteConstants {
   static const String analytics = 'analytics';
   static const String settings = 'settings';
   static const String securitySettings = 'securitySettings';
+  static const String visionBoard = 'visionBoard';
+  static const String createVisionItem = 'createVisionItem';
+  static const String visionItemDetails = 'visionItemDetails';
 
   static const String backup = 'backup';
   static const String privacy = 'privacy';
@@ -31,6 +34,9 @@ class RouteConstants {
   static const String goalDetailsPath = ':id';
   static const String addContributionPath = 'contribute';
   static const String analyticsPath = '/analytics';
+  static const String visionBoardPath = '/vision';
+  static const String createVisionItemPath = 'add-vision';
+  static const String visionItemDetailsPath = ':id';
 
   static const String profileProgress = 'profileProgress';
   static const String profileProgressPath = '/profile-progress';

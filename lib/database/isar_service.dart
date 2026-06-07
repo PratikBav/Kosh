@@ -11,6 +11,7 @@ import 'collections/streak_collection.dart';
 import 'collections/user_progress_collection.dart';
 import 'collections/app_settings_collection.dart';
 import 'collections/security_settings_collection.dart';
+import 'collections/vision_item_collection.dart';
 
 /// Manages the Isar database lifecycle.
 ///
@@ -109,6 +110,7 @@ class IsarService {
     UserProgressCollectionSchema,
     AppSettingsCollectionSchema,
     SecuritySettingsCollectionSchema,
+    VisionItemCollectionSchema,
   ];
 
   /// Closes the database connection.

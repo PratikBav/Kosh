@@ -11,6 +11,9 @@ import '../../../../shared/widgets/loading_indicator.dart';
 import '../../gamification/viewmodel/gamification_viewmodel.dart';
 import '../../gamification/widgets/gamification_banner.dart';
 import '../viewmodel/dashboard_viewmodel.dart';
+import '../../vision_board/viewmodel/vision_board_viewmodel.dart';
+import '../../vision_board/widgets/vision_banner.dart';
+import '../../vision_board/widgets/vision_card.dart';
 import '../widgets/financial_overview_card.dart';
 import '../widgets/goal_progress_card.dart';
 import '../widgets/quick_stats_card.dart';
@@ -23,6 +26,7 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(dashboardViewModelProvider);
+    final visionState = ref.watch(visionBoardViewModelProvider);
 
     if (state.isLoading && state.summary == null) {
       return const Scaffold(body: LoadingIndicator());
@@ -67,6 +71,9 @@ class DashboardScreen extends ConsumerWidget {
                   children: [
                     GamificationBanner(state: ref.watch(gamificationViewModelProvider)),
                     const SizedBox(height: AppSpacing.md),
+                    
+                    const VisionBanner().animate().fadeIn(duration: 500.ms),
+                    const SizedBox(height: AppSpacing.md),
                     FinancialOverviewCard(
                       netSavings: summary.netSavings,
                       income: summary.totalIncome,
@@ -82,6 +89,30 @@ class DashboardScreen extends ConsumerWidget {
                     ).animate().slideY(begin: 0.1, duration: 500.ms, curve: Curves.easeOut).fadeIn(),
 
                     const SizedBox(height: AppSpacing.xl),
+
+                    if (visionState.pinnedItems.isNotEmpty) ...[
+                      SectionHeader(
+                        title: 'Dreams In Progress',
+                        action: 'Vision Board',
+                        onActionPressed: () => context.goNamed(RouteConstants.visionBoard),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      SizedBox(
+                        height: 240, // Fixed height for horizontal scroll
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: visionState.pinnedItems.length,
+                          separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.md),
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 200, // Fixed width for each card
+                              child: VisionCard(vision: visionState.pinnedItems[index]),
+                            );
+                          },
+                        ),
+                      ).animate().fadeIn(duration: 500.ms),
+                      const SizedBox(height: AppSpacing.xl),
+                    ],
 
                     if (summary.topGoals.isEmpty) ...[
                       SectionHeader(title: 'Goals'),
