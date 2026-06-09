@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -114,9 +115,16 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                 hint: 'e.g. 120000',
                 prefixIcon: Icons.currency_rupee_rounded,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(11),
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
-                  if (double.tryParse(val) == null || double.parse(val) <= 0) return 'Invalid amount';
+                  final amount = double.tryParse(val);
+                  if (amount == null) return 'Invalid number';
+                  if (amount > 99999999999) return 'Cannot exceed 99,999,999,999';
+                  if (amount <= 0) return 'Must be > 0';
                   return null;
                 },
               ),

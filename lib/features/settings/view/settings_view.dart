@@ -7,7 +7,13 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_text_styles.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../shared/cards/kosh_card.dart';
+import '../../analytics/viewmodel/analytics_viewmodel.dart';
+import '../../dashboard/viewmodel/dashboard_viewmodel.dart';
+import '../../gamification/viewmodel/gamification_viewmodel.dart';
+import '../../goals/viewmodel/goals_viewmodel.dart';
 import '../../security/viewmodel/security_viewmodel.dart';
+import '../../transactions/viewmodel/transaction_viewmodel.dart';
+import '../../vision_board/viewmodel/vision_board_viewmodel.dart';
 import '../../../providers/database_providers.dart';
 
 class SettingsView extends ConsumerWidget {
@@ -133,8 +139,18 @@ class SettingsView extends ConsumerWidget {
                 await isar.writeTxn(() async {
                   await isar.clear();
                 });
+                
+                ref.invalidate(analyticsViewModelProvider);
+                ref.invalidate(dashboardViewModelProvider);
+                ref.invalidate(gamificationViewModelProvider);
+                ref.invalidate(goalsViewModelProvider);
+                ref.invalidate(securityViewModelProvider);
+                ref.invalidate(transactionViewModelProvider);
+                ref.invalidate(visionBoardViewModelProvider);
+
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('App data has been reset.')));
+                  context.go(RouteConstants.dashboard);
                 }
               },
               child: const Text('WIPE DATA', style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.bold)),

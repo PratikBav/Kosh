@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_spacing.dart';
@@ -38,6 +39,7 @@ class KoshTextField extends StatelessWidget {
     this.autofocus = false,
     this.readOnly = false,
     this.onTap,
+    this.inputFormatters,
   });
 
   final TextEditingController? controller;
@@ -59,6 +61,7 @@ class KoshTextField extends StatelessWidget {
   final bool autofocus;
   final bool readOnly;
   final VoidCallback? onTap;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +80,7 @@ class KoshTextField extends StatelessWidget {
       autofocus: autofocus,
       readOnly: readOnly,
       onTap: onTap,
+      inputFormatters: inputFormatters,
       style: const TextStyle(
         color: AppColors.textPrimary,
         fontSize: 14,
