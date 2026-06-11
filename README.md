@@ -279,15 +279,6 @@ flutter run
 
 ---
 
-## Contributors
-
-* Pratik Baviskar
-* B.Tech Project Team
-* ABV-IIITM Gwalior
-
----
-
-## License
 
 This project is developed for academic and educational purposes as part of a B.Tech project.
 
