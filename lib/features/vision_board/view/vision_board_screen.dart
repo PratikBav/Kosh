@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
-import '../../../core/constants/route_constants.dart';
+import '../../../../core/constants/route_constants.dart';
+import '../../settings/viewmodel/theme_viewmodel.dart';
 import '../viewmodel/vision_board_viewmodel.dart';
 import '../widgets/vision_card.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class VisionBoardScreen extends ConsumerStatefulWidget {
   const VisionBoardScreen({super.key});
@@ -26,6 +28,7 @@ class _VisionBoardScreenState extends ConsumerState<VisionBoardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeViewModelProvider);
     final state = ref.watch(visionBoardViewModelProvider);
     final viewModel = ref.read(visionBoardViewModelProvider.notifier);
 
@@ -34,18 +37,17 @@ class _VisionBoardScreenState extends ConsumerState<VisionBoardScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         title: const Text('Vision Board'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            color: AppColors.primary,
-            onPressed: () {
-              context.pushNamed(RouteConstants.createVisionItem);
-            },
-          ),
-        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 110.0),
+        child: FloatingActionButton(
+          heroTag: 'vision_fab',
+          onPressed: () => context.pushNamed(RouteConstants.createVisionItem),
+          child: const Icon(Icons.add_rounded, color: Colors.white),
+        ),
       ),
       body: state.isLoading && state.allItems.isEmpty
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : CustomScrollView(
               slivers: [
                 // Search Bar
@@ -157,20 +159,15 @@ class _VisionBoardScreenState extends ConsumerState<VisionBoardScreen> {
                     ),
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                      sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.8,
-                          crossAxisSpacing: AppSpacing.md,
-                          mainAxisSpacing: AppSpacing.md,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final item = state.pinnedItems[index];
-                            return VisionCard(vision: item);
-                          },
-                          childCount: state.pinnedItems.length,
-                        ),
+                      sliver: SliverMasonryGrid.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: AppSpacing.md,
+                        crossAxisSpacing: AppSpacing.md,
+                        childCount: state.pinnedItems.length,
+                        itemBuilder: (context, index) {
+                          final item = state.pinnedItems[index];
+                          return VisionCard(vision: item);
+                        },
                       ),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
@@ -192,23 +189,18 @@ class _VisionBoardScreenState extends ConsumerState<VisionBoardScreen> {
                   ),
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                    sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: AppSpacing.md,
-                        mainAxisSpacing: AppSpacing.md,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final item = state.filteredItems[index];
-                          return VisionCard(vision: item);
-                        },
-                        childCount: state.filteredItems.length,
-                      ),
+                    sliver: SliverMasonryGrid.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: AppSpacing.md,
+                      crossAxisSpacing: AppSpacing.md,
+                      childCount: state.filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = state.filteredItems[index];
+                        return VisionCard(vision: item);
+                      },
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 160)),
                 ],
               ],
             ),

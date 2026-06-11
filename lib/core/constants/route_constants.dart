@@ -6,6 +6,7 @@ class RouteConstants {
   RouteConstants._();
 
   // ── Route Names ───────────────────────────────────────────────────
+  static const String onboarding = 'onboarding';
   static const String dashboard = 'dashboard';
   static const String transactions = 'transactions';
   static const String addTransaction = 'addTransaction';
@@ -25,7 +26,8 @@ class RouteConstants {
   static const String privacy = 'privacy';
 
   // ── Route Paths ───────────────────────────────────────────────────
-  static const String dashboardPath = '/';
+  static const String onboardingPath = '/onboarding';
+  static const String dashboardPath = '/dashboard';
   static const String transactionsPath = '/transactions';
   static const String addTransactionPath = 'add';
   static const String transactionDetailsPath = ':id';

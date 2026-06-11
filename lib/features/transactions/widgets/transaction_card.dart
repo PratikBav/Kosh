@@ -3,9 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../../../../app/theme/app_text_styles.dart';
 import '../../../../database/collections/transaction_collection.dart';
-import '../../../../shared/cards/kosh_card.dart';
 import '../models/transaction_type.dart';
 
 /// Displays a single transaction in a list.
@@ -31,74 +29,92 @@ class TransactionCard extends StatelessWidget {
     final isIncome = transaction.type == TransactionType.income;
     final typeColor = transaction.type.color;
 
-    return KoshCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+    return InkWell(
       onTap: onTap,
-      child: Row(
-        children: [
-          // Category Icon
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              color: transaction.category.color.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.glassBorder),
+        ),
+        child: Row(
+          children: [
+            // Category Icon
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: transaction.category.color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                transaction.category.icon,
+                color: transaction.category.color,
+                size: 20,
+              ),
             ),
-            child: Icon(
-              transaction.category.icon,
-              color: transaction.category.color,
-              size: AppSpacing.iconMd,
+            const SizedBox(width: AppSpacing.md),
+            
+            // Title & Date
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    dateFormat.format(transaction.date),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          
-          // Title & Date
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            
+            // Amount & Type Indicator
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  transaction.title,
-                  style: AppTextStyles.bodyBold,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  '${isIncome ? '+' : '-'}${currencyFormat.format(transaction.amount)}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: typeColor,
+                  ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  dateFormat.format(transaction.date),
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: typeColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    transaction.category.name,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: typeColor,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          
-          // Amount & Type Indicator
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${isIncome ? '+' : '-'}${currencyFormat.format(transaction.amount)}',
-                style: AppTextStyles.bodyBold.copyWith(
-                  color: typeColor,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: typeColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

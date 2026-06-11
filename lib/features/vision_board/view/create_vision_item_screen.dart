@@ -107,7 +107,7 @@ class _CreateVisionItemScreenState extends ConsumerState<CreateVisionItemScreen>
                         : null,
                   ),
                   child: _imagePath == null
-                      ? const Column(
+                      ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_photo_alternate, size: 48, color: AppColors.primary),

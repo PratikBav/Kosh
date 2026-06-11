@@ -7,12 +7,14 @@ import '../../features/dashboard/view/dashboard_screen.dart';
 import '../../features/transactions/view/add_transaction_screen.dart';
 import '../../features/transactions/view/transaction_details_screen.dart';
 import '../../features/transactions/view/transactions_view.dart';
+import '../../features/transactions/models/transaction_type.dart';
 import '../../features/goals/view/goals_view.dart';
 import '../../features/goals/view/add_goal_screen.dart';
 import '../../features/goals/view/goal_details_screen.dart';
 import '../../features/goals/view/add_contribution_screen.dart';
 import '../../features/gamification/view/achievements_screen.dart';
 import '../../features/gamification/view/profile_progress_screen.dart';
+import '../../features/settings/view/appearance_settings_screen.dart';
 import '../../features/settings/view/settings_view.dart';
 import '../../features/security/view/security_settings_screen.dart';
 
@@ -21,6 +23,7 @@ import '../../features/security/view/privacy_settings_screen.dart';
 import '../../features/vision_board/view/vision_board_screen.dart';
 import '../../features/vision_board/view/create_vision_item_screen.dart';
 import '../../features/vision_board/view/vision_item_detail_screen.dart';
+import '../../features/onboarding/view/onboarding_screen.dart';
 import 'navigation_shell.dart';
 
 /// GoRouter configuration for the Kosh application.
@@ -50,7 +53,18 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouteConstants.dashboardPath,
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      // In a real app we would read this from a synchronous provider or SharedPreferences
+      // For this implementation, the splash screen or a designated provider handles the async initialization.
+      // We will add the GoRoute for onboarding and navigate there manually if needed or set it as initial.
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: RouteConstants.onboardingPath,
+        name: RouteConstants.onboarding,
+        builder: (context, state) => const OnboardingScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return NavigationShell(navigationShell: navigationShell);
@@ -84,8 +98,11 @@ class AppRouter {
                     builder: (context, state) {
                       // Pass transaction ID if editing
                       final id = state.uri.queryParameters['id'];
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final initialType = extra?['type'] as TransactionType?;
                       return AddTransactionScreen(
                         transactionId: id != null ? int.tryParse(id) : null,
+                        initialType: initialType,
                       );
                     },
                   ),
@@ -194,11 +211,15 @@ class AppRouter {
                 builder: (context, state) => const SettingsView(),
                 routes: [
                   GoRoute(
+                    path: 'appearance',
+                    name: 'appearance',
+                    builder: (context, state) => const AppearanceSettingsScreen(),
+                  ),
+                  GoRoute(
                     path: RouteConstants.securitySettingsPath,
                     name: RouteConstants.securitySettings,
                     builder: (context, state) => const SecuritySettingsScreen(),
                   ),
-
                   GoRoute(
                     path: RouteConstants.backupPath,
                     name: RouteConstants.backup,

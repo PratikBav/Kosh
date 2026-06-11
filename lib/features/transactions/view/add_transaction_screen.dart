@@ -16,9 +16,10 @@ import '../viewmodel/transaction_viewmodel.dart';
 
 /// Screen for adding or editing a transaction.
 class AddTransactionScreen extends ConsumerStatefulWidget {
-  const AddTransactionScreen({super.key, this.transactionId});
+  const AddTransactionScreen({super.key, this.transactionId, this.initialType});
 
   final int? transactionId;
+  final TransactionType? initialType;
 
   @override
   ConsumerState<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -40,6 +41,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialType != null) {
+      _selectedType = widget.initialType!;
+    }
     if (widget.transactionId != null) {
       _isEditing = true;
       _loadExistingTransaction();

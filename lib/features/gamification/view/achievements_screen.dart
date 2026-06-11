@@ -36,10 +36,15 @@ class AchievementsScreen extends ConsumerWidget {
             // Unlocked Tab
             state.unlockedAchievements.isEmpty
                 ? const Center(child: Text('No achievements unlocked yet.\nStart logging transactions!'))
-                : ListView.separated(
+                : GridView.builder(
                     padding: const EdgeInsets.all(AppSpacing.md),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: AppSpacing.md,
+                      crossAxisSpacing: AppSpacing.md,
+                      childAspectRatio: 0.85,
+                    ),
                     itemCount: state.unlockedAchievements.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
                       return AchievementCard(achievement: state.unlockedAchievements[index]);
                     },
@@ -48,10 +53,15 @@ class AchievementsScreen extends ConsumerWidget {
             // Locked Tab
             state.lockedAchievements.isEmpty
                 ? const Center(child: Text('You unlocked everything!'))
-                : ListView.separated(
+                : GridView.builder(
                     padding: const EdgeInsets.all(AppSpacing.md),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: AppSpacing.md,
+                      crossAxisSpacing: AppSpacing.md,
+                      childAspectRatio: 0.85,
+                    ),
                     itemCount: state.lockedAchievements.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
                       return AchievementCard(achievement: state.lockedAchievements[index]);
                     },

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 /// Kosh futuristic dark color palette.
 ///
-/// All colors are defined here as static constants so they can be
-/// referenced from [AppTheme], widgets, and feature modules without
-/// hard-coding hex values elsewhere.
+/// Most background colors are static const, but Accent colors
+/// can be dynamically changed.
 class AppColors {
   AppColors._(); // prevent instantiation
 
@@ -14,14 +13,14 @@ class AppColors {
   static const Color surfaceLight = Color(0xFF1B2438);
   static const Color surfaceBorder = Color(0xFF1E2A40);
 
-  // ── Accent Colors ─────────────────────────────────────────────────
-  static const Color primary = Color(0xFF7B61FF);
-  static const Color primaryLight = Color(0xFF9D8AFF);
-  static const Color primaryDark = Color(0xFF5A3FE6);
+  // ── Accent Colors (Dynamic) ───────────────────────────────────────
+  static Color primary = const Color(0xFFA855F7); // Default: Vibrant Purple
+  static Color primaryLight = const Color(0xFFC084FC);
+  static Color primaryDark = const Color(0xFF7E22CE);
 
-  static const Color secondary = Color(0xFF00C2FF);
-  static const Color secondaryLight = Color(0xFF4DD4FF);
-  static const Color secondaryDark = Color(0xFF0099CC);
+  static Color secondary = const Color(0xFF06B6D4); // Default: Vibrant Cyan
+  static Color secondaryLight = const Color(0xFF22D3EE);
+  static Color secondaryDark = const Color(0xFF0891B2);
 
   // ── Semantic Colors ───────────────────────────────────────────────
   static const Color success = Color(0xFF00E676);
@@ -36,7 +35,7 @@ class AppColors {
   static const Color textDisabled = Color(0xFF4A5060);
 
   // ── Gradients ─────────────────────────────────────────────────────
-  static const LinearGradient primaryGradient = LinearGradient(
+  static LinearGradient get primaryGradient => LinearGradient(
     colors: [primary, secondary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -58,9 +57,9 @@ class AppColors {
   );
 
   // ── Glassmorphism ─────────────────────────────────────────────────
-  static Color glassBackground = Colors.white.withValues(alpha: 0.05);
-  static Color glassBorder = Colors.white.withValues(alpha: 0.08);
-  static Color glassHighlight = Colors.white.withValues(alpha: 0.12);
+  static Color glassBackground = Colors.white.withValues(alpha: 0.03);
+  static Color glassBorder = Colors.white.withValues(alpha: 0.05);
+  static Color glassHighlight = Colors.white.withValues(alpha: 0.1);
 
   // ── Shimmer / Skeleton ────────────────────────────────────────────
   static const Color shimmerBase = Color(0xFF1A2235);
@@ -68,6 +67,77 @@ class AppColors {
 
   // ── Bottom Nav ────────────────────────────────────────────────────
   static const Color navBarBackground = Color(0xFF0D1220);
-  static const Color navBarActive = primary;
+  static Color get navBarActive => primary;
   static const Color navBarInactive = textTertiary;
+
+  // ── Theme Customization ───────────────────────────────────────────
+  static void setAccentColor(AppAccentColor accent) {
+    switch (accent) {
+      case AppAccentColor.purple:
+        primary = const Color(0xFFA855F7);
+        primaryLight = const Color(0xFFC084FC);
+        primaryDark = const Color(0xFF7E22CE);
+        secondary = const Color(0xFF06B6D4);
+        secondaryLight = const Color(0xFF22D3EE);
+        secondaryDark = const Color(0xFF0891B2);
+        break;
+      case AppAccentColor.emerald:
+        primary = const Color(0xFF10B981);
+        primaryLight = const Color(0xFF34D399);
+        primaryDark = const Color(0xFF047857);
+        secondary = const Color(0xFF3B82F6);
+        secondaryLight = const Color(0xFF60A5FA);
+        secondaryDark = const Color(0xFF1D4ED8);
+        break;
+      case AppAccentColor.rose:
+        primary = const Color(0xFFF43F5E);
+        primaryLight = const Color(0xFFFB7185);
+        primaryDark = const Color(0xFFBE123C);
+        secondary = const Color(0xFFF59E0B);
+        secondaryLight = const Color(0xFFFBBF24);
+        secondaryDark = const Color(0xFFB45309);
+        break;
+      case AppAccentColor.cyan:
+        primary = const Color(0xFF06B6D4);
+        primaryLight = const Color(0xFF22D3EE);
+        primaryDark = const Color(0xFF0891B2);
+        secondary = const Color(0xFF8B5CF6);
+        secondaryLight = const Color(0xFFA78BFA);
+        secondaryDark = const Color(0xFF5B21B6);
+        break;
+      case AppAccentColor.gold:
+        primary = const Color(0xFFF59E0B);
+        primaryLight = const Color(0xFFFBBF24);
+        primaryDark = const Color(0xFFB45309);
+        secondary = const Color(0xFF10B981);
+        secondaryLight = const Color(0xFF34D399);
+        secondaryDark = const Color(0xFF047857);
+        break;
+    }
+  }
+
+  static void setCustomAccentColor(Color customColor) {
+    primary = customColor;
+    
+    final hsl = HSLColor.fromColor(customColor);
+    
+    primaryLight = hsl.withLightness((hsl.lightness + 0.15).clamp(0.0, 1.0)).toColor();
+    primaryDark = hsl.withLightness((hsl.lightness - 0.15).clamp(0.0, 1.0)).toColor();
+    
+    // Create an analogous secondary color by shifting hue
+    final secondaryHue = (hsl.hue + 45.0) % 360.0;
+    final secondaryHsl = hsl.withHue(secondaryHue);
+    
+    secondary = secondaryHsl.toColor();
+    secondaryLight = secondaryHsl.withLightness((secondaryHsl.lightness + 0.15).clamp(0.0, 1.0)).toColor();
+    secondaryDark = secondaryHsl.withLightness((secondaryHsl.lightness - 0.15).clamp(0.0, 1.0)).toColor();
+  }
+}
+
+enum AppAccentColor {
+  purple,
+  emerald,
+  rose,
+  cyan,
+  gold,
 }

@@ -28,7 +28,7 @@ class FinancialOverviewCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Net Savings', style: AppTextStyles.label.copyWith(color: AppColors.textSecondary)),
-              const Icon(Icons.account_balance_wallet_rounded, color: AppColors.primary, size: 24),
+              Icon(Icons.account_balance_wallet_rounded, color: AppColors.primary, size: 24),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),

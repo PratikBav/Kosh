@@ -1,13 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/services/goal_calculator_service.dart';
 import '../../../../core/utils/currency_utils.dart';
 import '../../../../database/collections/goal_collection.dart';
-import '../../../../shared/cards/kosh_card.dart';
-import 'goal_progress_ring.dart';
 
 /// Card displaying a brief overview of a single goal.
 class GoalCard extends StatelessWidget {
@@ -28,79 +26,104 @@ class GoalCard extends StatelessWidget {
     );
     final daysLeft = GoalCalculatorService.getDaysLeft(goal.deadline);
 
-    return KoshCard(
+    return GestureDetector(
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GoalProgressRing(
-            percentage: percentage,
-            color: goal.category.color,
-            size: 50.0,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [
+              goal.category.color.withValues(alpha: 0.6),
+              goal.category.color.withValues(alpha: 0.2),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        goal.title,
-                        style: AppTextStyles.title.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (goal.isCompleted)
-                      Icon(Icons.check_circle, color: AppColors.success, size: 16)
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: goal.priority.color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: goal.priority.color.withValues(alpha: 0.5)),
-                        ),
-                        child: Text(
-                          goal.priority.label,
-                          style: AppTextStyles.caption.copyWith(
-                            color: goal.priority.color,
-                            fontSize: 10,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.background.withValues(alpha: 0.4),
+                    AppColors.background.withValues(alpha: 0.9),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                border: Border.all(color: AppColors.glassBorder),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(goal.category.icon, color: goal.category.color, size: 24),
+                      if (goal.isCompleted)
+                        const Icon(Icons.check_circle, color: AppColors.success, size: 20)
+                      else
+                        Text(
+                          '${percentage.toInt()}%',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
                           ),
                         ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    goal.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    CurrencyUtils.format(goal.targetAmount),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: percentage / 100,
+                      minHeight: 6,
+                      backgroundColor: AppColors.surfaceLight,
+                      valueColor: AlwaysStoppedAnimation<Color>(goal.category.color),
+                    ),
+                  ),
+                  if (daysLeft > 0 && !goal.isCompleted) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      '$daysLeft days left',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textTertiary,
                       ),
+                    ),
                   ],
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  '${CurrencyUtils.format(goal.currentAmount)} / ${CurrencyUtils.format(goal.targetAmount)}',
-                  style: AppTextStyles.body.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  goal.isCompleted 
-                    ? 'Goal Reached! 🎉' 
-                    : daysLeft > 0 
-                        ? '$daysLeft Days Left' 
-                        : 'Deadline Passed',
-                  style: AppTextStyles.label.copyWith(
-                    color: goal.isCompleted 
-                        ? AppColors.success 
-                        : (daysLeft > 0 ? AppColors.primary : AppColors.danger),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

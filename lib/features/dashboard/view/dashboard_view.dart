@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_text_styles.dart';
 import '../../../shared/cards/kosh_card.dart';
+import '../../settings/viewmodel/theme_viewmodel.dart';
 
 /// Dashboard placeholder screen.
 ///
 /// Validates the architecture by using the theme, KoshCard,
 /// spacing, and text style systems. No business logic.
-class DashboardView extends StatelessWidget {
+class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeViewModelProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),

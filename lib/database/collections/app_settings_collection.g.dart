@@ -18,13 +18,28 @@ const AppSettingsCollectionSchema = CollectionSchema(
   name: r'AppSettingsCollection',
   id: -1201272823460988305,
   properties: {
-    r'appVersion': PropertySchema(
+    r'accentColorIndex': PropertySchema(
       id: 0,
+      name: r'accentColorIndex',
+      type: IsarType.long,
+    ),
+    r'appVersion': PropertySchema(
+      id: 1,
       name: r'appVersion',
       type: IsarType.string,
     ),
+    r'customAccentColorValue': PropertySchema(
+      id: 2,
+      name: r'customAccentColorValue',
+      type: IsarType.long,
+    ),
+    r'hasCompletedOnboarding': PropertySchema(
+      id: 3,
+      name: r'hasCompletedOnboarding',
+      type: IsarType.bool,
+    ),
     r'isAchievementSeeded': PropertySchema(
-      id: 1,
+      id: 4,
       name: r'isAchievementSeeded',
       type: IsarType.bool,
     )
@@ -59,8 +74,11 @@ void _appSettingsCollectionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.appVersion);
-  writer.writeBool(offsets[1], object.isAchievementSeeded);
+  writer.writeLong(offsets[0], object.accentColorIndex);
+  writer.writeString(offsets[1], object.appVersion);
+  writer.writeLong(offsets[2], object.customAccentColorValue);
+  writer.writeBool(offsets[3], object.hasCompletedOnboarding);
+  writer.writeBool(offsets[4], object.isAchievementSeeded);
 }
 
 AppSettingsCollection _appSettingsCollectionDeserialize(
@@ -70,9 +88,12 @@ AppSettingsCollection _appSettingsCollectionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = AppSettingsCollection();
-  object.appVersion = reader.readString(offsets[0]);
+  object.accentColorIndex = reader.readLongOrNull(offsets[0]);
+  object.appVersion = reader.readString(offsets[1]);
+  object.customAccentColorValue = reader.readLongOrNull(offsets[2]);
+  object.hasCompletedOnboarding = reader.readBool(offsets[3]);
   object.id = id;
-  object.isAchievementSeeded = reader.readBool(offsets[1]);
+  object.isAchievementSeeded = reader.readBool(offsets[4]);
   return object;
 }
 
@@ -84,8 +105,14 @@ P _appSettingsCollectionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readLongOrNull(offset)) as P;
+    case 3:
+      return (reader.readBool(offset)) as P;
+    case 4:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -189,6 +216,80 @@ extension AppSettingsCollectionQueryWhere on QueryBuilder<AppSettingsCollection,
 
 extension AppSettingsCollectionQueryFilter on QueryBuilder<
     AppSettingsCollection, AppSettingsCollection, QFilterCondition> {
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> accentColorIndexIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'accentColorIndex',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> accentColorIndexIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'accentColorIndex',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> accentColorIndexEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'accentColorIndex',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> accentColorIndexGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'accentColorIndex',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> accentColorIndexLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'accentColorIndex',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> accentColorIndexBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'accentColorIndex',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<AppSettingsCollection, AppSettingsCollection,
       QAfterFilterCondition> appVersionEqualTo(
     String value, {
@@ -328,6 +429,90 @@ extension AppSettingsCollectionQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> customAccentColorValueIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'customAccentColorValue',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> customAccentColorValueIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'customAccentColorValue',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> customAccentColorValueEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'customAccentColorValue',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> customAccentColorValueGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'customAccentColorValue',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> customAccentColorValueLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'customAccentColorValue',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> customAccentColorValueBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'customAccentColorValue',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
+      QAfterFilterCondition> hasCompletedOnboardingEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hasCompletedOnboarding',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection,
       QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -403,6 +588,20 @@ extension AppSettingsCollectionQueryLinks on QueryBuilder<AppSettingsCollection,
 extension AppSettingsCollectionQuerySortBy
     on QueryBuilder<AppSettingsCollection, AppSettingsCollection, QSortBy> {
   QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      sortByAccentColorIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accentColorIndex', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      sortByAccentColorIndexDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accentColorIndex', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
       sortByAppVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'appVersion', Sort.asc);
@@ -413,6 +612,34 @@ extension AppSettingsCollectionQuerySortBy
       sortByAppVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'appVersion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      sortByCustomAccentColorValue() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'customAccentColorValue', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      sortByCustomAccentColorValueDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'customAccentColorValue', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      sortByHasCompletedOnboarding() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      sortByHasCompletedOnboardingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.desc);
     });
   }
 
@@ -434,6 +661,20 @@ extension AppSettingsCollectionQuerySortBy
 extension AppSettingsCollectionQuerySortThenBy
     on QueryBuilder<AppSettingsCollection, AppSettingsCollection, QSortThenBy> {
   QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      thenByAccentColorIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accentColorIndex', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      thenByAccentColorIndexDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accentColorIndex', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
       thenByAppVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'appVersion', Sort.asc);
@@ -444,6 +685,34 @@ extension AppSettingsCollectionQuerySortThenBy
       thenByAppVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'appVersion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      thenByCustomAccentColorValue() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'customAccentColorValue', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      thenByCustomAccentColorValueDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'customAccentColorValue', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      thenByHasCompletedOnboarding() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QAfterSortBy>
+      thenByHasCompletedOnboardingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hasCompletedOnboarding', Sort.desc);
     });
   }
 
@@ -479,9 +748,30 @@ extension AppSettingsCollectionQuerySortThenBy
 extension AppSettingsCollectionQueryWhereDistinct
     on QueryBuilder<AppSettingsCollection, AppSettingsCollection, QDistinct> {
   QueryBuilder<AppSettingsCollection, AppSettingsCollection, QDistinct>
+      distinctByAccentColorIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'accentColorIndex');
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QDistinct>
       distinctByAppVersion({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'appVersion', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QDistinct>
+      distinctByCustomAccentColorValue() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'customAccentColorValue');
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, AppSettingsCollection, QDistinct>
+      distinctByHasCompletedOnboarding() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hasCompletedOnboarding');
     });
   }
 
@@ -501,10 +791,31 @@ extension AppSettingsCollectionQueryProperty on QueryBuilder<
     });
   }
 
+  QueryBuilder<AppSettingsCollection, int?, QQueryOperations>
+      accentColorIndexProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'accentColorIndex');
+    });
+  }
+
   QueryBuilder<AppSettingsCollection, String, QQueryOperations>
       appVersionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'appVersion');
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, int?, QQueryOperations>
+      customAccentColorValueProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'customAccentColorValue');
+    });
+  }
+
+  QueryBuilder<AppSettingsCollection, bool, QQueryOperations>
+      hasCompletedOnboardingProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hasCompletedOnboarding');
     });
   }
 

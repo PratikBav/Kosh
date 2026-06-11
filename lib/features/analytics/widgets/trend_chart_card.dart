@@ -93,7 +93,14 @@ class TrendChartCard extends StatelessWidget {
                     dotData: const FlDotData(show: true),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: (isSavingsRate ? AppColors.secondary : AppColors.danger).withValues(alpha: 0.1),
+                      gradient: LinearGradient(
+                        colors: [
+                          (isSavingsRate ? AppColors.secondary : AppColors.danger).withValues(alpha: 0.4),
+                          (isSavingsRate ? AppColors.secondary : AppColors.danger).withValues(alpha: 0.0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                     ),
                   ),
                 ],

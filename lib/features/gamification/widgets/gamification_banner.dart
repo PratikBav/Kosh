@@ -53,7 +53,7 @@ class GamificationBanner extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.stars_rounded, color: AppColors.primary),
+                    Icon(Icons.stars_rounded, color: AppColors.primary),
                     const SizedBox(width: 8),
                     Text(
                       'Level $level • ${state.currentLevelName}',

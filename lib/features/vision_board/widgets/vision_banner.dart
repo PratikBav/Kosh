@@ -34,7 +34,7 @@ class VisionBanner extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.lightbulb_outline_rounded,
                 color: AppColors.primary,
                 size: AppSpacing.iconSm,

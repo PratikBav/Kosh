@@ -94,7 +94,7 @@ class VisionCard extends ConsumerWidget {
                           color: AppColors.background.withValues(alpha: 0.7),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.push_pin, color: AppColors.primary, size: 16),
+                        child: Icon(Icons.push_pin, color: AppColors.primary, size: 16),
                       ),
                     ),
                   
@@ -143,7 +143,7 @@ class VisionCard extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         '${(progress * 100).toStringAsFixed(0)}% Complete',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

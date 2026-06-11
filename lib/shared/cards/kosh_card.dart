@@ -46,13 +46,13 @@ class KoshCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = borderRadius ?? AppSpacing.radiusLg;
+    final radius = borderRadius ?? 24.0;
     final effectiveGlowColor = glowColor ?? AppColors.primary;
 
     Widget card = ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: Container(
           width: width,
           height: height,

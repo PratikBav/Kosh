@@ -6,7 +6,9 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/constants/route_constants.dart';
+import '../../settings/viewmodel/theme_viewmodel.dart';
 import '../../../../shared/widgets/loading_indicator.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../viewmodel/goals_viewmodel.dart';
 import '../widgets/goal_card.dart';
 import '../widgets/goal_summary_card.dart';
@@ -16,16 +18,20 @@ class GoalsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeViewModelProvider);
     final state = ref.watch(goalsViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Financial Goals'),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'goals_fab',
-        onPressed: () => context.pushNamed(RouteConstants.addGoal),
-        child: const Icon(Icons.add_rounded),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 110.0),
+        child: FloatingActionButton(
+          heroTag: 'goals_fab',
+          onPressed: () => context.pushNamed(RouteConstants.addGoal),
+          child: const Icon(Icons.add_rounded, color: Colors.white),
+        ),
       ),
       body: state.isLoading && state.goals.isEmpty
           ? const LoadingIndicator()
@@ -73,26 +79,24 @@ class GoalsView extends ConsumerWidget {
         ),
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final goal = state.goals[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: GoalCard(
-                    goal: goal,
-                    onTap: () => context.goNamed(
-                      RouteConstants.goalDetails,
-                      pathParameters: {'id': goal.id.toString()},
-                    ),
-                  ),
-                );
-              },
-              childCount: state.goals.length,
-            ),
+          sliver: SliverMasonryGrid.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: AppSpacing.md,
+            crossAxisSpacing: AppSpacing.md,
+            childCount: state.goals.length,
+            itemBuilder: (context, index) {
+              final goal = state.goals[index];
+              return GoalCard(
+                goal: goal,
+                onTap: () => context.goNamed(
+                  RouteConstants.goalDetails,
+                  pathParameters: {'id': goal.id.toString()},
+                ),
+              );
+            },
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 80)), // Space for FAB
+        const SliverToBoxAdapter(child: SizedBox(height: 160)), // Space for FAB
       ],
     );
   }

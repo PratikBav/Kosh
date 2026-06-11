@@ -51,30 +51,43 @@ class GoalDetailsScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Goal Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_rounded),
-            onPressed: () {
-              // TODO: Implement Edit Goal
-            },
-          )
-        ],
-      ),
       floatingActionButton: goal.isCompleted
           ? null
           : FloatingActionButton.extended(
               heroTag: 'goal_details_fab_${goal.id}',
+              backgroundColor: AppColors.primary,
               onPressed: () => context.goNamed(
                 RouteConstants.addContribution,
                 pathParameters: {'id': goal.id.toString()},
               ),
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Add Contribution'),
+              icon: const Icon(Icons.add_rounded, color: Colors.white),
+              label: const Text('Add Contribution', style: TextStyle(color: Colors.white)),
             ),
       body: CustomScrollView(
         slivers: [
+          SliverAppBar(
+            expandedHeight: 250.0,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [goal.category.color.withValues(alpha: 0.8), goal.category.color.withValues(alpha: 0.2)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_rounded),
+                onPressed: () {
+                  // TODO: Implement Edit Goal
+                },
+              )
+            ],
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),

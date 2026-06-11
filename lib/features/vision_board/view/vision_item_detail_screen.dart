@@ -145,7 +145,7 @@ class VisionItemDetailScreen extends ConsumerWidget {
                     ),
                     child: Text(
                       item.category.label,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.primary,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -191,7 +191,7 @@ class VisionItemDetailScreen extends ConsumerWidget {
                               ),
                               Text(
                                 '${(progress * 100).toStringAsFixed(1)}%',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

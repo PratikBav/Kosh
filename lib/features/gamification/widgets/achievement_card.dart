@@ -20,12 +20,13 @@ class AchievementCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Opacity(
         opacity: achievement.isUnlocked ? 1.0 : 0.4,
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Placeholder for icon, in a real app you'd load the Image asset
             Container(
-              width: 50,
-              height: 50,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 color: achievement.isUnlocked ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surfaceLight,
                 shape: BoxShape.circle,
@@ -33,29 +34,27 @@ class AchievementCard extends StatelessWidget {
               child: Icon(
                 achievement.isUnlocked ? Icons.emoji_events : Icons.lock,
                 color: achievement.isUnlocked ? AppColors.primary : AppColors.textSecondary,
+                size: 32,
               ),
             ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(achievement.title, style: AppTextStyles.title),
-                  const SizedBox(height: 4),
-                  Text(achievement.description, style: AppTextStyles.body),
-                ],
-              ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              achievement.title,
+              style: AppTextStyles.title.copyWith(fontSize: 14),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(width: AppSpacing.sm),
+            const Spacer(),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.secondary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 '+${achievement.xpReward} XP',
-                style: AppTextStyles.label.copyWith(color: AppColors.secondary),
+                style: AppTextStyles.label.copyWith(color: AppColors.secondary, fontSize: 10),
               ),
             ),
           ],

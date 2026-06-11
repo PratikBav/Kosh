@@ -50,7 +50,7 @@ class ProfileProgressScreen extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.stars_rounded, size: 64, color: AppColors.primary),
+                  Icon(Icons.stars_rounded, size: 64, color: AppColors.primary),
                   const SizedBox(height: AppSpacing.sm),
                   Text('Level $level', style: AppTextStyles.displayMedium),
                   Text(state.currentLevelName, style: AppTextStyles.title.copyWith(color: AppColors.primary)),

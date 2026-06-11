@@ -2,10 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/theme/app_theme.dart';
 
+import '../features/settings/viewmodel/theme_viewmodel.dart';
+
 /// Provides the current [ThemeData].
 ///
-/// For now this is a simple static provider returning the dark theme.
-/// In the future, this could be extended to support theme switching.
+/// Returns the dark theme, dynamically updating when the user changes
+/// their accent color.
 final themeProvider = Provider((ref) {
+  ref.watch(themeViewModelProvider);
   return AppTheme.darkTheme;
 });

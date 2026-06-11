@@ -48,7 +48,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
+            colorScheme: ColorScheme.dark(
               primary: AppColors.primary,
               surface: AppColors.surface,
               onSurface: AppColors.textPrimary,
@@ -136,7 +136,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                   side: const BorderSide(color: AppColors.surfaceBorder),
                 ),
                 tileColor: AppColors.surfaceLight,
-                leading: const Icon(Icons.calendar_month_rounded, color: AppColors.primary),
+                leading: Icon(Icons.calendar_month_rounded, color: AppColors.primary),
                 title: Text(
                   _deadline == null ? 'Select Deadline' : DateFormat.yMMMd().format(_deadline!),
                   style: AppTextStyles.body,

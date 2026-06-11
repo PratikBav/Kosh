@@ -39,7 +39,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock_outline, size: 80, color: AppColors.primary),
+              Icon(Icons.lock_outline, size: 80, color: AppColors.primary),
               const SizedBox(height: AppSpacing.md),
               const Text(
                 'Kosh is Locked',

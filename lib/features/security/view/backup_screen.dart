@@ -77,7 +77,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
                           Icon(Icons.cloud_download_outlined, color: AppColors.primary),
                           SizedBox(width: AppSpacing.sm),
@@ -111,7 +111,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                               label: const Text('Restore'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppColors.primary,
-                                side: const BorderSide(color: AppColors.primary),
+                                side: BorderSide(color: AppColors.primary),
                               ),
                             ),
                           ),

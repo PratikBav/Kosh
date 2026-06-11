@@ -34,7 +34,7 @@ class AnalyticsScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     if (state.selectedTimeFilter == f)
-                      const Icon(Icons.check, color: AppColors.primary, size: 18)
+                      Icon(Icons.check, color: AppColors.primary, size: 18)
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'app_spacing.dart';
@@ -13,12 +14,18 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get darkTheme {
-    return ThemeData(
+    final baseTheme = ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+    );
 
+    return baseTheme.copyWith(
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(baseTheme.textTheme).apply(
+        bodyColor: AppColors.textPrimary,
+        displayColor: AppColors.textPrimary,
+      ),
       // ── Color Scheme ────────────────────────────────────────────────
-      colorScheme: const ColorScheme.dark(
+      colorScheme: ColorScheme.dark(
         primary: AppColors.primary,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryDark,
@@ -58,9 +65,9 @@ class AppTheme {
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          side: const BorderSide(
-            color: AppColors.surfaceBorder,
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(
+            color: AppColors.glassBorder,
             width: 1,
           ),
         ),
@@ -68,18 +75,18 @@ class AppTheme {
       ),
 
       // ── Bottom Navigation Bar ───────────────────────────────────────
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.navBarBackground,
         selectedItemColor: AppColors.navBarActive,
         unselectedItemColor: AppColors.navBarInactive,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: TextStyle(
+        selectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.3,
         ),
-        unselectedLabelStyle: TextStyle(
+        unselectedLabelStyle: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w400,
           letterSpacing: 0.3,
@@ -95,7 +102,7 @@ class AppTheme {
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(
+            return IconThemeData(
               color: AppColors.primary,
               size: AppSpacing.bottomNavIconSize,
             );
@@ -107,7 +114,7 @@ class AppTheme {
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const TextStyle(
+            return TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
@@ -141,7 +148,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -182,7 +189,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary),
+          side: BorderSide(color: AppColors.primary),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
             vertical: AppSpacing.ms,
@@ -215,11 +222,11 @@ class AppTheme {
       ),
 
       // ── Floating Action Button ──────────────────────────────────────
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
       ),
 
       // ── Divider ─────────────────────────────────────────────────────
@@ -306,7 +313,7 @@ class AppTheme {
       ),
 
       // ── Progress Indicator ──────────────────────────────────────────
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.primary,
         linearTrackColor: AppColors.surfaceLight,
         circularTrackColor: AppColors.surfaceLight,
