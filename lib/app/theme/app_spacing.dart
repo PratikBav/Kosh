@@ -29,7 +29,6 @@ class AppSpacing {
   /// 64.0
   static const double xxxl = 64.0;
 
-  // ── Border Radius ─────────────────────────────────────────────────
   /// 8.0
   static const double radiusSm = 8.0;
 
@@ -45,7 +44,6 @@ class AppSpacing {
   /// 999.0 — fully rounded
   static const double radiusFull = 999.0;
 
-  // ── Icon Sizes ────────────────────────────────────────────────────
   /// 16.0
   static const double iconSm = 16.0;
 
@@ -58,7 +56,6 @@ class AppSpacing {
   /// 32.0
   static const double iconXl = 32.0;
 
-  // ── Bottom Navigation ─────────────────────────────────────────────
   static const double bottomNavHeight = 72.0;
   static const double bottomNavIconSize = 22.0;
 }

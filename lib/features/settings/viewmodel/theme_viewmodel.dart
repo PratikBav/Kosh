@@ -38,8 +38,7 @@ class ThemeViewModel extends StateNotifier<Color> {
     
     await _isar.writeTxn(() async {
       var settings = await _isar.appSettingsCollections.get(1) ?? AppSettingsCollection();
-      // Use deprecated .value for older Flutter or just .value since we don't know the exact SDK.
-      // Wait, the warning said "use toARGB32()".
+
       settings.customAccentColorValue = color.toARGB32();
       settings.accentColorIndex = null;
       await _isar.appSettingsCollections.put(settings);

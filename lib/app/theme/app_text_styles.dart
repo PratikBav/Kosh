@@ -9,7 +9,6 @@ import 'app_colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-  // ── Display ───────────────────────────────────────────────────────
   static const TextStyle displayLarge = TextStyle(
     fontSize: 34,
     fontWeight: FontWeight.w700,
@@ -33,7 +32,6 @@ class AppTextStyles {
     height: 1.3,
   );
 
-  // ── Headline ──────────────────────────────────────────────────────
   static const TextStyle headline = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
@@ -48,7 +46,6 @@ class AppTextStyles {
     height: 1.35,
   );
 
-  // ── Title ─────────────────────────────────────────────────────────
   static const TextStyle title = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -63,7 +60,6 @@ class AppTextStyles {
     height: 1.4,
   );
 
-  // ── Body ──────────────────────────────────────────────────────────
   static const TextStyle body = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
@@ -85,7 +81,6 @@ class AppTextStyles {
     height: 1.5,
   );
 
-  // ── Caption ───────────────────────────────────────────────────────
   static const TextStyle caption = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -102,7 +97,6 @@ class AppTextStyles {
     letterSpacing: 0.2,
   );
 
-  // ── Overline / Label ──────────────────────────────────────────────
   static const TextStyle overline = TextStyle(
     fontSize: 10,
     fontWeight: FontWeight.w600,
@@ -118,7 +112,6 @@ class AppTextStyles {
     height: 1.4,
   );
 
-  // ── Numeric (for financial values) ────────────────────────────────
   static const TextStyle amountLarge = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.w700,
@@ -141,7 +134,6 @@ class AppTextStyles {
     height: 1.3,
   );
 
-  // ── Button Text ───────────────────────────────────────────────────
   static const TextStyle button = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,

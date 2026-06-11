@@ -9,7 +9,6 @@ class GoalsRepository {
 
   final Isar _isar;
 
-  // ── Goals ──────────────────────────────────────────────────────────
 
   /// Adds a new goal.
   Future<void> createGoal(GoalCollection goal) async {
@@ -60,7 +59,6 @@ class GoalsRepository {
     });
   }
 
-  // ── Contributions ──────────────────────────────────────────────────
 
   /// Adds a new contribution to a goal and updates the goal's currentAmount.
   Future<void> addContribution(ContributionCollection contribution) async {

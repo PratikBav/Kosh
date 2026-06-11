@@ -2,12 +2,10 @@
 class StorageConstants {
   StorageConstants._();
 
-  // ── Secure Storage Keys ───────────────────────────────────────────
   static const String biometricEnabled = 'biometric_enabled';
   static const String appPin = 'app_pin';
   static const String firstLaunch = 'first_launch';
 
-  // ── Isar Collection Names ─────────────────────────────────────────
   static const String transactionCollection = 'transactions';
   static const String goalCollection = 'goals';
   static const String investmentCollection = 'investments';

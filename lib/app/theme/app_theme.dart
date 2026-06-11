@@ -24,7 +24,6 @@ class AppTheme {
         bodyColor: AppColors.textPrimary,
         displayColor: AppColors.textPrimary,
       ),
-      // ── Color Scheme ────────────────────────────────────────────────
       colorScheme: ColorScheme.dark(
         primary: AppColors.primary,
         onPrimary: Colors.white,
@@ -38,10 +37,8 @@ class AppTheme {
         onError: Colors.white,
       ),
 
-      // ── Scaffold ────────────────────────────────────────────────────
       scaffoldBackgroundColor: AppColors.background,
 
-      // ── AppBar ──────────────────────────────────────────────────────
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
@@ -60,7 +57,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Card ────────────────────────────────────────────────────────
       cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
@@ -74,7 +70,6 @@ class AppTheme {
         margin: EdgeInsets.zero,
       ),
 
-      // ── Bottom Navigation Bar ───────────────────────────────────────
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.navBarBackground,
         selectedItemColor: AppColors.navBarActive,
@@ -93,7 +88,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Navigation Bar (Material 3) ─────────────────────────────────
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.navBarBackground,
         indicatorColor: AppColors.primary.withValues(alpha: 0.15),
@@ -130,7 +124,6 @@ class AppTheme {
         }),
       ),
 
-      // ── Input Decoration ────────────────────────────────────────────
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceLight,
@@ -164,7 +157,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Elevated Button ─────────────────────────────────────────────
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -185,7 +177,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Outlined Button ─────────────────────────────────────────────
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
@@ -205,7 +196,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Text Button ─────────────────────────────────────────────────
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
@@ -221,7 +211,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Floating Action Button ──────────────────────────────────────
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -229,14 +218,12 @@ class AppTheme {
         shape: const CircleBorder(),
       ),
 
-      // ── Divider ─────────────────────────────────────────────────────
       dividerTheme: const DividerThemeData(
         color: AppColors.surfaceBorder,
         thickness: 1,
         space: 0,
       ),
 
-      // ── Dialog ──────────────────────────────────────────────────────
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
@@ -253,7 +240,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Bottom Sheet ────────────────────────────────────────────────
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
@@ -265,7 +251,6 @@ class AppTheme {
         showDragHandle: true,
       ),
 
-      // ── Snack Bar ───────────────────────────────────────────────────
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceLight,
         contentTextStyle: const TextStyle(
@@ -278,7 +263,6 @@ class AppTheme {
         behavior: SnackBarBehavior.floating,
       ),
 
-      // ── Chip ────────────────────────────────────────────────────────
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceLight,
         selectedColor: AppColors.primary.withValues(alpha: 0.2),
@@ -296,7 +280,6 @@ class AppTheme {
         ),
       ),
 
-      // ── Switch ──────────────────────────────────────────────────────
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -312,14 +295,12 @@ class AppTheme {
         }),
       ),
 
-      // ── Progress Indicator ──────────────────────────────────────────
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.primary,
         linearTrackColor: AppColors.surfaceLight,
         circularTrackColor: AppColors.surfaceLight,
       ),
 
-      // ── Tooltip ─────────────────────────────────────────────────────
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
           color: AppColors.surfaceLight,

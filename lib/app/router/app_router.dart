@@ -26,15 +26,11 @@ import '../../features/vision_board/view/vision_item_detail_screen.dart';
 import '../../features/onboarding/view/onboarding_screen.dart';
 import 'navigation_shell.dart';
 
-/// GoRouter configuration for the Kosh application.
-///
-/// Uses [StatefulShellRoute.indexedStack] for persistent bottom
-/// navigation across five main tabs. Each branch maintains its
-/// own navigation stack.
+/// Application routing configuration.
 class AppRouter {
   AppRouter._();
 
-  /// Navigator keys for each branch — allows independent navigation stacks.
+
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _dashboardNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'dashboard');
@@ -54,9 +50,7 @@ class AppRouter {
     initialLocation: RouteConstants.dashboardPath,
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      // In a real app we would read this from a synchronous provider or SharedPreferences
-      // For this implementation, the splash screen or a designated provider handles the async initialization.
-      // We will add the GoRoute for onboarding and navigate there manually if needed or set it as initial.
+
       return null;
     },
     routes: [
@@ -70,7 +64,6 @@ class AppRouter {
           return NavigationShell(navigationShell: navigationShell);
         },
         branches: [
-          // ── Dashboard ─────────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _dashboardNavigatorKey,
             routes: [
@@ -82,7 +75,6 @@ class AppRouter {
             ],
           ),
 
-          // ── Transactions ──────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _transactionsNavigatorKey,
             routes: [
@@ -120,7 +112,6 @@ class AppRouter {
             ],
           ),
 
-          // ── Goals ─────────────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _goalsNavigatorKey,
             routes: [
@@ -160,7 +151,6 @@ class AppRouter {
             ],
           ),
 
-          // ── Vision Board ──────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _visionBoardNavigatorKey,
             routes: [
@@ -189,7 +179,6 @@ class AppRouter {
             ],
           ),
 
-          // ── Analytics ─────────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _analyticsNavigatorKey,
             routes: [
@@ -201,7 +190,6 @@ class AppRouter {
             ],
           ),
 
-          // ── Settings ──────────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _settingsNavigatorKey,
             routes: [

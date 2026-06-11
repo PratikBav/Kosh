@@ -7,13 +7,11 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._(); // prevent instantiation
 
-  // ── Core Backgrounds ──────────────────────────────────────────────
   static const Color background = Color(0xFF0B0F1A);
   static const Color surface = Color(0xFF131A2A);
   static const Color surfaceLight = Color(0xFF1B2438);
   static const Color surfaceBorder = Color(0xFF1E2A40);
 
-  // ── Accent Colors (Dynamic) ───────────────────────────────────────
   static Color primary = const Color(0xFFA855F7); // Default: Vibrant Purple
   static Color primaryLight = const Color(0xFFC084FC);
   static Color primaryDark = const Color(0xFF7E22CE);
@@ -22,19 +20,16 @@ class AppColors {
   static Color secondaryLight = const Color(0xFF22D3EE);
   static Color secondaryDark = const Color(0xFF0891B2);
 
-  // ── Semantic Colors ───────────────────────────────────────────────
   static const Color success = Color(0xFF00E676);
   static const Color warning = Color(0xFFFFB300);
   static const Color danger = Color(0xFFFF5252);
   static const Color info = Color(0xFF448AFF);
 
-  // ── Text Colors ───────────────────────────────────────────────────
   static const Color textPrimary = Colors.white;
   static const Color textSecondary = Color(0xFFAAB0C0);
   static const Color textTertiary = Color(0xFF6B7280);
   static const Color textDisabled = Color(0xFF4A5060);
 
-  // ── Gradients ─────────────────────────────────────────────────────
   static LinearGradient get primaryGradient => LinearGradient(
     colors: [primary, secondary],
     begin: Alignment.topLeft,
@@ -56,21 +51,17 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-  // ── Glassmorphism ─────────────────────────────────────────────────
   static Color glassBackground = Colors.white.withValues(alpha: 0.03);
   static Color glassBorder = Colors.white.withValues(alpha: 0.05);
   static Color glassHighlight = Colors.white.withValues(alpha: 0.1);
 
-  // ── Shimmer / Skeleton ────────────────────────────────────────────
   static const Color shimmerBase = Color(0xFF1A2235);
   static const Color shimmerHighlight = Color(0xFF243045);
 
-  // ── Bottom Nav ────────────────────────────────────────────────────
   static const Color navBarBackground = Color(0xFF0D1220);
   static Color get navBarActive => primary;
   static const Color navBarInactive = textTertiary;
 
-  // ── Theme Customization ───────────────────────────────────────────
   static void setAccentColor(AppAccentColor accent) {
     switch (accent) {
       case AppAccentColor.purple:

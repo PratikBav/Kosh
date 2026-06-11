@@ -8,10 +8,7 @@ import '../../../app/theme/app_text_styles.dart';
 import '../../../shared/cards/kosh_card.dart';
 import '../../settings/viewmodel/theme_viewmodel.dart';
 
-/// Dashboard placeholder screen.
-///
-/// Validates the architecture by using the theme, KoshCard,
-/// spacing, and text style systems. No business logic.
+/// Main dashboard view.
 class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
 
@@ -33,7 +30,6 @@ class DashboardView extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Greeting ──────────────────────────────────────────
             Text(
               'Good Evening',
               style: AppTextStyles.caption.copyWith(
@@ -47,7 +43,6 @@ class DashboardView extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Balance Card ──────────────────────────────────────
             KoshCard(
               showGlow: true,
               glowColor: AppColors.primary,
@@ -89,7 +84,6 @@ class DashboardView extends ConsumerWidget {
             ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Quick Actions ─────────────────────────────────────
             const Text('Quick Actions', style: AppTextStyles.title),
             const SizedBox(height: AppSpacing.ms),
             Row(
@@ -105,7 +99,6 @@ class DashboardView extends ConsumerWidget {
             ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Recent Transactions ───────────────────────────────
             const Text('Recent Transactions', style: AppTextStyles.title),
             const SizedBox(height: AppSpacing.ms),
             KoshCard(
