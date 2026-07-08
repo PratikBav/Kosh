@@ -1,4 +1,4 @@
-# Kosh 💰
+# Kosh
 
 ### Future-Focused Personal Finance & Goal Tracking Application
 
