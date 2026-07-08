@@ -235,10 +235,6 @@ Users maintain complete ownership of their financial data.
 
 Focus on achieving life goals rather than simply tracking expenses.
 
-### Motivation Through Progress
-
-Use gamification and visual progress tracking to encourage better financial habits.
-
 ---
 
 ## Future Enhancements
@@ -249,7 +245,6 @@ Use gamification and visual progress tracking to encourage better financial habi
 * Advanced Investment Portfolio Tracking
 * Financial Calendar
 * Recurring Transaction Automation
-* PDF Financial Reports
 * Data Synchronization Across Devices (Optional)
 
 ---
