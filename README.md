@@ -193,7 +193,7 @@ Handles:
 * Progress Tracking
 * Goal Analytics
 
-### Analytics
+### Analytics--
 
 Generates:
 
