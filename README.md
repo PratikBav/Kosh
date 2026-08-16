@@ -142,7 +142,6 @@ lib/
 │
 ├── providers/
 │
-├── shared/
 │
 └── main.dart
 ```
@@ -166,11 +165,9 @@ Provides a comprehensive overview of:
 
 Manages:
 
-* Income Records
 * Expense Records
 * Categories
 * Transaction History
-* Search & Filters
 
 ### Goals
 
