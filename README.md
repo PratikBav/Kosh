@@ -74,7 +74,6 @@ Kosh is a modern, privacy-first personal finance application built using Flutter
 ### Architecture
 
 * MVVM Architecture
-* Feature-First Architecture
 
 ### State Management
 
