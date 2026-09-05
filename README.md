@@ -223,7 +223,6 @@ Users maintain complete ownership of their financial data.
 * Family Finance Management
 * Advanced Investment Portfolio Tracking
 * Financial Calendar
-* Recurring Transaction Automation
 * Data Synchronization Across Devices (Optional)
 
 ---
