@@ -157,7 +157,6 @@ Provides a comprehensive overview of:
 * Savings
 * Goal Progress
 * Recent Transactions
-* Gamification Status
 
 ### Transactions
 
@@ -214,9 +213,6 @@ Kosh is designed around three core principles:
 
 Users maintain complete ownership of their financial data.
 
-### Goal-Oriented Finance
-
-Focus on achieving life goals rather than simply tracking expenses.
 
 ---
 
