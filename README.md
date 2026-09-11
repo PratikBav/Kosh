@@ -2,7 +2,7 @@
 
 ### Future-Focused Personal Finance & Goal Tracking Application
 
-Kosh is a modern, privacy-first personal finance application built using Flutter. It helps users track expenses, manage income, monitor investments, set financial goals, and build healthy financial habits through an engaging gamified experience.
+Kosh is a modern, privacy-first personal finance application built using Flutter. It helps users track expenses, manage income, set financial goals, and build healthy financial habits through an engaging gamified experience.
 
 
 ---
@@ -121,7 +121,6 @@ lib/
 │   ├── constants/
 │   ├── services/
 │   ├── utils/
-│   ├── widgets/
 │   └── errors/
 │
 ├── database/
@@ -222,7 +221,7 @@ Users maintain complete ownership of their financial data.
 * Multi-Currency Support
 * Budget Planning Module
 * Family Finance Management
-* Advanced Investment Portfolio Tracking
+* Investment Portfolio Tracking
 * Financial Calendar
 * Data Synchronization Across Devices (Optional)
 

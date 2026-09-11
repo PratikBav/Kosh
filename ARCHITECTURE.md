@@ -26,7 +26,6 @@
 - 💰 Transaction tracking (income, expenses, transfers)
 - 🎯 Financial goal setting and progress tracking
 - 📊 Analytics with rich interactive charts
-- 📈 Investment portfolio tracking
 - 🏆 Gamification to reward healthy financial habits
 - 🌟 Vision board for dream visualization
 - 🔐 Biometric authentication for security
@@ -98,142 +97,197 @@
 
 ```
 lib/
-│
-├── main.dart                              # App entry point
-│
-├── app/                                   # App-level configuration
-│   ├── kosh_app.dart                      # Root MaterialApp widget
+├── app/
 │   ├── router/
-│   │   └── app_router.dart                # GoRouter configuration
-│   └── theme/
-│       ├── app_theme.dart                 # Material 3 ThemeData
-│       ├── app_colors.dart                # Color palette constants
-│       └── app_text_styles.dart           # Typography system
-│
-├── core/                                  # Shared utilities & infrastructure
+│   │   ├── app_router.dart
+│   │   └── navigation_shell.dart
+│   ├── theme/
+│   │   ├── app_colors.dart
+│   │   ├── app_spacing.dart
+│   │   ├── app_text_styles.dart
+│   │   └── app_theme.dart
+│   └── kosh_app.dart
+├── core/
 │   ├── constants/
-│   │   ├── app_constants.dart             # App-wide constants
-│   │   ├── storage_constants.dart         # DB & storage key constants
-│   │   └── route_constants.dart           # Named route path strings
-│   ├── utils/
-│   │   ├── date_utils.dart                # Date formatting helpers
-│   │   ├── currency_utils.dart            # Currency formatting helpers
-│   │   └── validators.dart                # Input validation logic
+│   │   ├── app_constants.dart
+│   │   └── route_constants.dart
+│   ├── errors/
+│   │   ├── app_exception.dart
+│   │   └── error_handler.dart
 │   ├── services/
-│   │   ├── notification_service.dart      # Flutter Local Notifications
-│   │   ├── auth_service.dart              # Local Auth / Biometrics
-│   │   └── secure_storage_service.dart    # Flutter Secure Storage
-│   ├── widgets/
-│   │   ├── kosh_scaffold.dart             # Reusable scaffold with nav
-│   │   ├── kosh_button.dart               # Styled button component
-│   │   ├── kosh_text_field.dart           # Styled input field
-│   │   └── kosh_loading_indicator.dart    # Loading state widget
-│   ├── extensions/
-│   │   ├── string_extensions.dart         # String helper extensions
-│   │   ├── date_time_extensions.dart      # DateTime helper extensions
-│   │   ├── number_extensions.dart         # Number helper extensions
-│   │   └── context_extensions.dart        # BuildContext extensions
-│   └── errors/
-│       ├── app_exception.dart             # Base exception class
-│       ├── error_handler.dart             # Global error handling
-│       └── failures.dart                  # Failure type definitions
-│
-├── database/                              # Data persistence layer
-│   ├── isar_service.dart                  # Isar DB init & management
+│   │   ├── analytics_calculator_service.dart
+│   │   ├── backup_service.dart
+│   │   ├── biometric_service.dart
+│   │   ├── finance_calculator_service.dart
+│   │   ├── gamification_service.dart
+│   │   ├── goal_calculator_service.dart
+│   │   ├── key_value_store.dart
+│   │   ├── notification_service.dart
+│   │   ├── pin_service.dart
+│   │   ├── screen_security_service.dart
+│   │   ├── secure_storage_service.dart
+│   │   └── security_service.dart
+│   └── utils/
+│       ├── change_debouncer.dart
+│       └── currency_utils.dart
+├── database/
 │   ├── collections/
-│   │   ├── transaction_collection.dart    # Transaction Isar schema
-│   │   ├── goal_collection.dart           # Goal Isar schema
-│   │   ├── investment_collection.dart     # Investment Isar schema
-│   │   └── category_collection.dart       # Category Isar schema
-│   └── repositories/
-│       ├── transaction_repository.dart    # Transaction data access
-│       ├── goal_repository.dart           # Goal data access
-│       ├── investment_repository.dart     # Investment data access
-│       └── category_repository.dart       # Category data access
-│
-├── models/                                # Shared data models
-│   ├── transaction_model.dart             # Transaction entity
-│   ├── goal_model.dart                    # Financial goal entity
-│   ├── investment_model.dart              # Investment entity
-│   ├── category_model.dart                # Category entity
-│   └── user_settings_model.dart           # User preferences
-│
-├── providers/                             # Riverpod dependency injection
-│   ├── database_providers.dart            # Isar service providers
-│   ├── repository_providers.dart          # Repository providers
-│   └── service_providers.dart             # Service providers
-│
-├── features/                              # Feature modules (MVVM)
-│   │
-│   ├── dashboard/
-│   │   ├── view/
-│   │   │   └── dashboard_view.dart        # Dashboard screen
-│   │   ├── viewmodel/
-│   │   │   └── dashboard_viewmodel.dart   # Dashboard state & logic
-│   │   ├── widgets/                       # Dashboard-specific widgets
-│   │   └── models/                        # Dashboard-specific models
-│   │
-│   ├── transactions/
-│   │   ├── view/
-│   │   │   └── transactions_view.dart     # Transactions list screen
-│   │   ├── viewmodel/
-│   │   │   └── transactions_viewmodel.dart # Transactions state & logic
-│   │   ├── widgets/                       # Transaction-specific widgets
-│   │   └── models/                        # Transaction-specific models
-│   │
-│   ├── goals/
-│   │   ├── view/
-│   │   │   └── goals_view.dart            # Goals tracking screen
-│   │   ├── viewmodel/
-│   │   │   └── goals_viewmodel.dart       # Goals state & logic
-│   │   ├── widgets/                       # Goal-specific widgets
-│   │   └── models/                        # Goal-specific models
-│   │
+│   │   ├── achievement_collection.dart
+│   │   ├── app_settings_collection.dart
+│   │   ├── contribution_collection.dart
+│   │   ├── goal_collection.dart
+│   │   ├── security_settings_collection.dart
+│   │   ├── streak_collection.dart
+│   │   ├── transaction_collection.dart
+│   │   ├── user_progress_collection.dart
+│   │   ├── vision_item_collection.dart
+│   │   └── xp_record_collection.dart
+│   ├── repositories/
+│   │   ├── goals_repository.dart
+│   │   └── transaction_repository.dart
+│   └── isar_service.dart
+├── features/
 │   ├── analytics/
+│   │   ├── models/
+│   │   │   ├── analytics_summary.dart
+│   │   │   ├── category_summary.dart
+│   │   │   ├── goal_analytics.dart
+│   │   │   └── monthly_summary.dart
+│   │   ├── repository/
+│   │   │   └── analytics_repository.dart
 │   │   ├── view/
-│   │   │   └── analytics_view.dart        # Analytics & charts screen
+│   │   │   └── analytics_screen.dart
 │   │   ├── viewmodel/
-│   │   │   └── analytics_viewmodel.dart   # Analytics state & logic
-│   │   ├── widgets/                       # Chart widgets (fl_chart)
-│   │   └── models/                        # Analytics-specific models
-│   │
-│   ├── investments/
+│   │   │   ├── analytics_state.dart
+│   │   │   └── analytics_viewmodel.dart
+│   │   └── widgets/
+│   │       ├── analytics_summary_card.dart
+│   │       ├── category_breakdown_tile.dart
+│   │       ├── pie_chart_card.dart
+│   │       └── trend_chart_card.dart
+│   ├── dashboard/
+│   │   ├── models/
+│   │   │   └── dashboard_summary.dart
+│   │   ├── repository/
+│   │   │   └── dashboard_repository.dart
 │   │   ├── view/
-│   │   │   └── investments_view.dart      # Investment portfolio screen
+│   │   │   └── dashboard_screen.dart
 │   │   ├── viewmodel/
-│   │   │   └── investments_viewmodel.dart # Investment state & logic
-│   │   ├── widgets/                       # Investment-specific widgets
-│   │   └── models/                        # Investment-specific models
-│   │
+│   │   │   ├── dashboard_state.dart
+│   │   │   └── dashboard_viewmodel.dart
+│   │   └── widgets/
+│   │       ├── activity_feed.dart
+│   │       ├── daily_motivation_card.dart
+│   │       ├── dashboard_hero_header.dart
+│   │       ├── goal_spotlight_card.dart
+│   │       ├── quick_actions_row.dart
+│   │       ├── section_header.dart
+│   │       ├── streak_progress_card.dart
+│   │       └── wealth_health_ring.dart
 │   ├── gamification/
+│   │   ├── models/
+│   │   ├── repository/
+│   │   │   └── gamification_repository.dart
 │   │   ├── view/
-│   │   │   └── gamification_view.dart     # Achievements & rewards screen
+│   │   │   ├── achievements_screen.dart
+│   │   │   └── profile_progress_screen.dart
 │   │   ├── viewmodel/
-│   │   │   └── gamification_viewmodel.dart # Gamification state & logic
-│   │   ├── widgets/                       # Badge/streak widgets
-│   │   └── models/                        # Gamification models
-│   │
-│   ├── vision_board/
+│   │   │   ├── gamification_state.dart
+│   │   │   └── gamification_viewmodel.dart
+│   │   └── widgets/
+│   │       ├── achievement_card.dart
+│   │       └── xp_progress_bar.dart
+│   ├── goals/
+│   │   ├── models/
+│   │   │   ├── goal_category.dart
+│   │   │   └── goal_priority.dart
 │   │   ├── view/
-│   │   │   └── vision_board_view.dart     # Vision board screen
+│   │   │   ├── add_contribution_screen.dart
+│   │   │   ├── add_goal_screen.dart
+│   │   │   ├── goal_details_screen.dart
+│   │   │   └── goals_view.dart
 │   │   ├── viewmodel/
-│   │   │   └── vision_board_viewmodel.dart # Vision board state & logic
-│   │   ├── widgets/                       # Vision board widgets
-│   │   └── models/                        # Vision board models
-│   │
-│   └── settings/
+│   │   │   ├── goal_details_state.dart
+│   │   │   ├── goal_details_viewmodel.dart
+│   │   │   ├── goals_state.dart
+│   │   │   └── goals_viewmodel.dart
+│   │   └── widgets/
+│   │       ├── contribution_tile.dart
+│   │       ├── goal_card.dart
+│   │       ├── goal_progress_ring.dart
+│   │       └── goal_summary_card.dart
+│   ├── onboarding/
+│   │   └── view/
+│   │       └── onboarding_screen.dart
+│   ├── security/
+│   │   ├── repository/
+│   │   │   └── security_repository.dart
+│   │   ├── view/
+│   │   │   ├── app_lock_screen.dart
+│   │   │   ├── backup_screen.dart
+│   │   │   ├── pin_prompt_screen.dart
+│   │   │   ├── pin_setup_screen.dart
+│   │   │   ├── privacy_settings_screen.dart
+│   │   │   └── security_settings_screen.dart
+│   │   ├── viewmodel/
+│   │   │   ├── security_state.dart
+│   │   │   └── security_viewmodel.dart
+│   │   └── widgets/
+│   │       └── pin_pad.dart
+│   ├── settings/
+│   │   ├── models/
+│   │   ├── view/
+│   │   │   ├── appearance_settings_screen.dart
+│   │   │   └── settings_view.dart
+│   │   ├── viewmodel/
+│   │   │   └── theme_viewmodel.dart
+│   │   └── widgets/
+│   ├── transactions/
+│   │   ├── models/
+│   │   │   ├── transaction_category.dart
+│   │   │   └── transaction_type.dart
+│   │   ├── view/
+│   │   │   ├── add_transaction_screen.dart
+│   │   │   ├── transaction_details_screen.dart
+│   │   │   └── transactions_view.dart
+│   │   ├── viewmodel/
+│   │   │   ├── transaction_state.dart
+│   │   │   └── transaction_viewmodel.dart
+│   │   └── widgets/
+│   │       ├── filter_sheet.dart
+│   │       └── transaction_card.dart
+│   └── vision_board/
+│       ├── models/
+│       ├── repository/
+│       │   └── vision_board_repository.dart
 │       ├── view/
-│       │   └── settings_view.dart         # Settings screen
+│       │   ├── create_vision_item_screen.dart
+│       │   ├── vision_board_screen.dart
+│       │   └── vision_item_detail_screen.dart
 │       ├── viewmodel/
-│       │   └── settings_viewmodel.dart    # Settings state & logic
-│       ├── widgets/                       # Settings-specific widgets
-│       └── models/                        # Settings-specific models
-│
-└── shared/                                # Cross-feature shared UI
-    ├── widgets/                           # Reusable UI components
-    ├── animations/                        # flutter_animate presets
-    ├── dialogs/                           # Common dialog templates
-    └── cards/                             # Reusable card components
+│       │   ├── motivation_viewmodel.dart
+│       │   ├── vision_board_state.dart
+│       │   └── vision_board_viewmodel.dart
+│       └── widgets/
+│           ├── quote_card.dart
+│           └── vision_card.dart
+├── providers/
+│   ├── database_providers.dart
+│   ├── repository_providers.dart
+│   ├── router_provider.dart
+│   ├── service_providers.dart
+│   └── theme_provider.dart
+├── shared/
+│   ├── animations/
+│   ├── cards/
+│   │   └── kosh_card.dart
+│   ├── dialogs/
+│   └── widgets/
+│       ├── empty_state.dart
+│       ├── kosh_button.dart
+│       ├── kosh_textfield.dart
+│       └── loading_indicator.dart
+└── main.dart
 ```
 
 ---
@@ -346,10 +400,10 @@ feature_name/
 | **Transactions** | Full transaction list with filters, search, add/edit/delete |
 | **Goals** | Financial goal creation, tracking, progress visualization |
 | **Analytics** | Spending breakdown, income vs expenses, trends (fl_chart) |
-| **Investments** | Portfolio overview, individual holdings, gain/loss tracking |
 | **Gamification** | Achievement badges, streaks, financial health score |
 | **Vision Board** | Visual goal board with images and milestones |
-| **Settings** | Currency, notifications, biometric toggle, data export |
+| **Security** | PIN lock, biometric unlock, auto-lock, backup and restore |
+| **Settings** | Appearance, accent colour, data export |
 
 ---
 
@@ -423,12 +477,14 @@ PIN / Biometric Config
 ### `providers/`
 - `database_providers.dart` — Isar instance provider
 - `repository_providers.dart` — All repository providers (depend on DB)
-- `service_providers.dart` — Notification, auth, secure storage providers
+- `service_providers.dart` — Notification, PIN, screen security, secure storage providers
 
 ### `core/errors/`
-- `app_exception.dart` — Base `AppException` class
-- `failures.dart` — Typed failure classes (DatabaseFailure, ValidationFailure, etc.)
-- `error_handler.dart` — Global `FlutterError.onError` and zone-guarded error catching
+- `app_exception.dart` — `AppException` and its typed subclasses (`DatabaseException`,
+  `ValidationException`, `StorageException`, …), thrown by services and unwrapped
+  by the UI so users see `message` rather than the type and code
+- `error_handler.dart` — Global `FlutterError.onError` and zone-guarded error
+  catching, installed in `main()`
 
 ---
 
@@ -449,7 +505,7 @@ PIN / Biometric Config
 
 | Type | Convention | Example |
 |---|---|---|
-| Files | `snake_case` | `dashboard_view.dart` |
+| Files | `snake_case` | `dashboard_screen.dart` |
 | Classes | `PascalCase` | `DashboardViewModel` |
 | Variables | `camelCase` | `totalBalance` |
 | Constants | `camelCase` | `primaryAccent` |
