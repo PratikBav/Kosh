@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
+import '../../../../core/utils/change_debouncer.dart';
 import '../../../../database/collections/contribution_collection.dart';
 import '../../../../database/collections/goal_collection.dart';
 import '../../../../database/collections/transaction_collection.dart';
@@ -23,10 +24,9 @@ class DashboardViewModel extends StateNotifier<DashboardState> {
 
   final Isar _isar;
   final DashboardRepository _repository;
-  
-  StreamSubscription<void>? _transactionsSub;
-  StreamSubscription<void>? _goalsSub;
-  StreamSubscription<void>? _contributionsSub;
+
+  final List<StreamSubscription<void>> _subscriptions = [];
+  final ChangeDebouncer _debouncer = ChangeDebouncer();
 
   void _init() {
     loadDashboard();
@@ -34,18 +34,18 @@ class DashboardViewModel extends StateNotifier<DashboardState> {
   }
 
   void _setupWatchers() {
-    // Watch for any changes in the respective collections and reload the dashboard.
-    _transactionsSub = _isar.transactionCollections.watchLazy().listen((_) {
-      loadDashboard();
-    });
-    
-    _goalsSub = _isar.goalCollections.watchLazy().listen((_) {
-      loadDashboard();
-    });
-    
-    _contributionsSub = _isar.contributionCollections.watchLazy().listen((_) {
-      loadDashboard();
-    });
+    // Watch for changes in any collection the dashboard summarises. Adding a
+    // goal contribution writes two of them, so the reload is debounced into a
+    // single pass rather than running once per collection.
+    for (final stream in [
+      _isar.transactionCollections.watchLazy(),
+      _isar.goalCollections.watchLazy(),
+      _isar.contributionCollections.watchLazy(),
+    ]) {
+      _subscriptions.add(
+        stream.listen((_) => _debouncer.run(loadDashboard)),
+      );
+    }
   }
 
   Future<void> loadDashboard() async {
@@ -79,9 +79,10 @@ class DashboardViewModel extends StateNotifier<DashboardState> {
 
   @override
   void dispose() {
-    _transactionsSub?.cancel();
-    _goalsSub?.cancel();
-    _contributionsSub?.cancel();
+    _debouncer.dispose();
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
     super.dispose();
   }
 }

@@ -143,28 +143,39 @@ class GamificationService {
     }
   }
 
+  /// Guards the awardXP -> checkMilestones -> unlockAchievement -> awardXP
+  /// cycle. Unlocking an achievement grants XP, which would otherwise re-enter
+  /// milestone checking once per unlock in a single award.
+  bool _isCheckingMilestones = false;
+
   Future<void> checkMilestones() async {
-    final start = DateTime(1970);
-    final end = DateTime.now();
-    final overall = await analyticsRepository.getOverallSummary(start, end);
-    final totalSavings = overall['savings'] ?? 0;
+    if (_isCheckingMilestones) return;
+    _isCheckingMilestones = true;
 
-    if (totalSavings >= 10000) {
-      await unlockAchievement('wealth_builder');
-    }
-    if (totalSavings >= 50000) {
-      await unlockAchievement('financial_warrior');
-    }
+    try {
+      // Summed by the database over an index rather than by loading every
+      // transaction since 1970, which this ran on every XP award.
+      final totalSavings = await analyticsRepository.getLifetimeNetSavings();
 
-    final isar = gamificationRepository.isar;
-    final txCount = await isar.transactionCollections.count();
-    if (txCount >= 100) {
-      await unlockAchievement('century_club');
-    }
-    
-    final progress = await isar.userProgressCollections.get(1);
-    if (progress != null && progress.currentLevel >= 8) {
-      await unlockAchievement('financial_master');
+      if (totalSavings >= 10000) {
+        await unlockAchievement('wealth_builder');
+      }
+      if (totalSavings >= 50000) {
+        await unlockAchievement('financial_warrior');
+      }
+
+      final isar = gamificationRepository.isar;
+      final txCount = await isar.transactionCollections.count();
+      if (txCount >= 100) {
+        await unlockAchievement('century_club');
+      }
+
+      final progress = await isar.userProgressCollections.get(1);
+      if (progress != null && progress.currentLevel >= 8) {
+        await unlockAchievement('financial_master');
+      }
+    } finally {
+      _isCheckingMilestones = false;
     }
   }
 }

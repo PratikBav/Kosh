@@ -4,21 +4,22 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/utils/currency_utils.dart';
+import '../models/analytics_summary.dart';
 
 class AnalyticsSummaryCard extends StatelessWidget {
-  const AnalyticsSummaryCard({super.key, required this.summary});
+  const AnalyticsSummaryCard({super.key, required this.totals});
 
-  final Map<String, double> summary;
+  final PeriodTotals totals;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _buildStat('Income', summary['income'] ?? 0, AppColors.success, Icons.arrow_downward_rounded)),
+        Expanded(child: _buildStat('Income', totals.income, AppColors.success, Icons.arrow_downward_rounded)),
         const SizedBox(width: AppSpacing.sm),
-        Expanded(child: _buildStat('Expense', summary['expense'] ?? 0, AppColors.danger, Icons.arrow_upward_rounded)),
+        Expanded(child: _buildStat('Expense', totals.expense, AppColors.danger, Icons.arrow_upward_rounded)),
         const SizedBox(width: AppSpacing.sm),
-        Expanded(child: _buildStat('Savings', summary['savings'] ?? 0, AppColors.secondary, Icons.account_balance_wallet_rounded)),
+        Expanded(child: _buildStat('Savings', totals.savings, AppColors.secondary, Icons.account_balance_wallet_rounded)),
       ],
     );
   }

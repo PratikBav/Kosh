@@ -1,67 +1,34 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:kosh/core/errors/app_exception.dart';
 import 'package:kosh/core/services/backup_service.dart';
-import 'package:kosh/database/collections/achievement_collection.dart';
-import 'package:kosh/database/collections/app_settings_collection.dart';
 import 'package:kosh/database/collections/contribution_collection.dart';
 import 'package:kosh/database/collections/goal_collection.dart';
-import 'package:kosh/database/collections/security_settings_collection.dart';
-import 'package:kosh/database/collections/streak_collection.dart';
 import 'package:kosh/database/collections/transaction_collection.dart';
-import 'package:kosh/database/collections/user_progress_collection.dart';
 import 'package:kosh/database/collections/vision_item_collection.dart';
-import 'package:kosh/database/collections/xp_record_collection.dart';
 import 'package:kosh/features/goals/models/goal_category.dart';
 import 'package:kosh/features/goals/models/goal_priority.dart';
 import 'package:kosh/features/transactions/models/transaction_category.dart';
 import 'package:kosh/features/transactions/models/transaction_type.dart';
 
+import 'helpers/test_database.dart';
+
 /// These tests run Isar against a real on-disk database in a temp directory,
 /// which is the only way to exercise the id remapping that restore depends on.
 void main() {
-  late Directory tempDir;
+  late TestDatabase db;
   late Isar isar;
   late BackupService service;
 
-  setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
-  });
+  setUpAll(TestDatabase.ensureInitialized);
 
   setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('kosh_backup_test');
-    isar = await Isar.open(
-      [
-        TransactionCollectionSchema,
-        GoalCollectionSchema,
-        ContributionCollectionSchema,
-        AchievementCollectionSchema,
-        XpRecordCollectionSchema,
-        StreakCollectionSchema,
-        UserProgressCollectionSchema,
-        AppSettingsCollectionSchema,
-        SecuritySettingsCollectionSchema,
-        VisionItemCollectionSchema,
-      ],
-      directory: tempDir.path,
-      name: 'kosh_test',
-      inspector: false,
-    );
+    db = await TestDatabase.open('kosh_backup_test');
+    isar = db.isar;
     service = BackupService(isar);
   });
 
-  tearDown(() async {
-    await isar.close(deleteFromDisk: true);
-    // Windows can still hold a handle briefly after close; the database itself
-    // is already gone, so a failure to remove the empty directory is noise.
-    try {
-      if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
-    } on FileSystemException {
-      // Left for the OS to reap.
-    }
-  });
+  tearDown(() => db.close());
 
   GoalCollection buildGoal(String title, double target) {
     return GoalCollection()

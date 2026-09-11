@@ -1,23 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:kosh/core/services/pin_service.dart';
 import 'package:kosh/core/services/screen_security_service.dart';
 import 'package:kosh/core/services/security_service.dart';
-import 'package:kosh/database/collections/achievement_collection.dart';
-import 'package:kosh/database/collections/app_settings_collection.dart';
-import 'package:kosh/database/collections/contribution_collection.dart';
-import 'package:kosh/database/collections/goal_collection.dart';
 import 'package:kosh/database/collections/security_settings_collection.dart';
-import 'package:kosh/database/collections/streak_collection.dart';
-import 'package:kosh/database/collections/transaction_collection.dart';
-import 'package:kosh/database/collections/user_progress_collection.dart';
-import 'package:kosh/database/collections/vision_item_collection.dart';
-import 'package:kosh/database/collections/xp_record_collection.dart';
 import 'package:kosh/features/security/repository/security_repository.dart';
 import 'package:kosh/features/security/viewmodel/security_viewmodel.dart';
 
+import 'helpers/test_database.dart';
 import 'pin_service_test.dart' show FakeKeyValueStore;
 
 /// Reports no biometric hardware, which is the state the PIN path must cover.
@@ -38,35 +28,17 @@ class NoopScreenSecurityService implements ScreenSecurityService {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late Directory tempDir;
+  late TestDatabase db;
   late Isar isar;
   late FakeKeyValueStore store;
   late PinService pinService;
   late SecurityViewModel viewModel;
 
-  setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
-  });
+  setUpAll(TestDatabase.ensureInitialized);
 
   setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('kosh_security_test');
-    isar = await Isar.open(
-      [
-        TransactionCollectionSchema,
-        GoalCollectionSchema,
-        ContributionCollectionSchema,
-        AchievementCollectionSchema,
-        XpRecordCollectionSchema,
-        StreakCollectionSchema,
-        UserProgressCollectionSchema,
-        AppSettingsCollectionSchema,
-        SecuritySettingsCollectionSchema,
-        VisionItemCollectionSchema,
-      ],
-      directory: tempDir.path,
-      name: 'kosh_security_test',
-      inspector: false,
-    );
+    db = await TestDatabase.open('kosh_security_test');
+    isar = db.isar;
 
     store = FakeKeyValueStore();
     pinService = PinService(store, iterations: 1000);
@@ -82,14 +54,7 @@ void main() {
 
   tearDown(() async {
     viewModel.dispose();
-    await isar.close(deleteFromDisk: true);
-    // Windows can still hold a handle briefly after close; the database itself
-    // is already gone, so a failure to remove the empty directory is noise.
-    try {
-      if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
-    } on FileSystemException {
-      // Left for the OS to reap.
-    }
+    await db.close();
   });
 
   Future<void> settle() => Future<void>.delayed(const Duration(milliseconds: 50));

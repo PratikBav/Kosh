@@ -65,7 +65,7 @@ class AnalyticsScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: AppSpacing.md),
 
-                            AnalyticsSummaryCard(summary: state.overallSummary)
+                            AnalyticsSummaryCard(totals: state.totals)
                                 .animate().slideY(begin: 0.1).fadeIn(),
 
                             const SizedBox(height: AppSpacing.xl),

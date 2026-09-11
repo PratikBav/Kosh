@@ -1,9 +1,21 @@
 import '../../../../core/services/analytics_calculator_service.dart';
 import '../../../../database/repositories/goals_repository.dart';
 import '../../../../database/repositories/transaction_repository.dart';
-import '../models/category_summary.dart';
+import '../../transactions/models/transaction_type.dart';
+import '../models/analytics_summary.dart';
 import '../models/goal_analytics.dart';
-import '../models/monthly_summary.dart';
+
+/// Everything the analytics screen renders, gathered in one round trip.
+class AnalyticsReport {
+  const AnalyticsReport({required this.summary, required this.goals});
+
+  const AnalyticsReport.empty()
+      : summary = const AnalyticsSummary.empty(),
+        goals = null;
+
+  final AnalyticsSummary summary;
+  final GoalAnalytics? goals;
+}
 
 class AnalyticsRepository {
   AnalyticsRepository({
@@ -14,76 +26,36 @@ class AnalyticsRepository {
   final TransactionRepository transactionsRepository;
   final GoalsRepository goalsRepository;
 
-  /// Returns expense breakdown by category for the given timeframe
-  Future<List<CategorySummary>> getExpenseAnalytics(DateTime startDate, DateTime endDate) async {
-    final transactions = await transactionsRepository.getAllTransactions();
-    // Filter locally for now, since Isar complex date filtering can be tricky with simple repos
-    final filtered = transactions.where((tx) => 
-      tx.date.isAfter(startDate.subtract(const Duration(seconds: 1))) && 
-      tx.date.isBefore(endDate.add(const Duration(seconds: 1)))
-    ).toList();
-    
-    return AnalyticsCalculatorService.calculateCategoryBreakdown(filtered);
+  /// Builds the full analytics report for a timeframe.
+  ///
+  /// One indexed range query feeds every transaction-derived figure. The
+  /// previous shape exposed five methods that each re-read the whole
+  /// transaction table and filtered it in Dart, so a single refresh cost five
+  /// full scans.
+  Future<AnalyticsReport> getReport(DateTime startDate, DateTime endDate) async {
+    // Started together, awaited separately: Future.wait would erase both
+    // element types to dynamic.
+    final transactionsFuture =
+        transactionsRepository.getTransactionsBetween(startDate, endDate);
+    final goalsFuture = goalsRepository.getAllGoals();
+
+    return AnalyticsReport(
+      summary: AnalyticsCalculatorService.summarize(await transactionsFuture),
+      goals: AnalyticsCalculatorService.calculateGoalAnalytics(
+        await goalsFuture,
+      ),
+    );
   }
 
-  /// Returns income sources for the given timeframe
-  Future<List<CategorySummary>> getIncomeAnalytics(DateTime startDate, DateTime endDate) async {
-    final transactions = await transactionsRepository.getAllTransactions();
-    final filtered = transactions.where((tx) => 
-      tx.date.isAfter(startDate.subtract(const Duration(seconds: 1))) && 
-      tx.date.isBefore(endDate.add(const Duration(seconds: 1)))
-    ).toList();
-    
-    return AnalyticsCalculatorService.calculateIncomeSources(filtered);
-  }
+  /// Lifetime net savings, computed by the database rather than by loading
+  /// every transaction. Used for milestone checks, which run on every XP
+  /// award.
+  Future<double> getLifetimeNetSavings() async {
+    final totals = await Future.wait([
+      transactionsRepository.totalAmountByType(TransactionType.income),
+      transactionsRepository.totalAmountByType(TransactionType.expense),
+    ]);
 
-  /// Returns monthly trends over the given timeframe
-  Future<List<MonthlySummary>> getMonthlyTrends(DateTime startDate, DateTime endDate) async {
-    final transactions = await transactionsRepository.getAllTransactions();
-    final filtered = transactions.where((tx) => 
-      tx.date.isAfter(startDate.subtract(const Duration(seconds: 1))) && 
-      tx.date.isBefore(endDate.add(const Duration(seconds: 1)))
-    ).toList();
-    
-    return AnalyticsCalculatorService.calculateMonthlyTrend(filtered);
-  }
-
-  /// Returns goal analytics
-  Future<GoalAnalytics> getGoalAnalytics() async {
-    final goals = await goalsRepository.getAllGoals();
-    return AnalyticsCalculatorService.calculateGoalAnalytics(goals);
-  }
-
-  /// Get overall summary numbers for the selected timeframe
-  Future<Map<String, double>> getOverallSummary(DateTime startDate, DateTime endDate) async {
-    final transactions = await transactionsRepository.getAllTransactions();
-    final filtered = transactions.where((tx) => 
-      tx.date.isAfter(startDate.subtract(const Duration(seconds: 1))) && 
-      tx.date.isBefore(endDate.add(const Duration(seconds: 1)))
-    ).toList();
-    
-    // Quick aggregation using a dummy MonthlySummary wrapper to reuse the logic
-    final summary = AnalyticsCalculatorService.calculateMonthlyTrend(filtered);
-    
-    double totalIncome = 0;
-    double totalExpense = 0;
-    
-    for (var s in summary) {
-      totalIncome += s.income;
-      totalExpense += s.expense;
-    }
-    
-    double savingsRate = 0;
-    if (totalIncome > 0) {
-      final net = totalIncome - totalExpense;
-      if (net > 0) savingsRate = (net / totalIncome) * 100;
-    }
-
-    return {
-      'income': totalIncome,
-      'expense': totalExpense,
-      'savings': totalIncome - totalExpense,
-      'savingsRate': savingsRate,
-    };
+    return totals[0] - totals[1];
   }
 }

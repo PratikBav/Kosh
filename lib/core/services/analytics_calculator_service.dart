@@ -1,5 +1,6 @@
 import '../../database/collections/goal_collection.dart';
 import '../../database/collections/transaction_collection.dart';
+import '../../features/analytics/models/analytics_summary.dart';
 import '../../features/analytics/models/category_summary.dart';
 import '../../features/analytics/models/goal_analytics.dart';
 import '../../features/analytics/models/monthly_summary.dart';
@@ -7,99 +8,66 @@ import '../../features/transactions/models/transaction_category.dart';
 import '../../features/transactions/models/transaction_type.dart';
 
 class AnalyticsCalculatorService {
-  
-  /// Calculates expense breakdown by category for a list of transactions.
-  static List<CategorySummary> calculateCategoryBreakdown(List<TransactionCollection> transactions) {
-    final expenses = transactions.where((tx) => tx.type == TransactionType.expense);
-    
-    double totalExpense = 0;
-    final Map<TransactionCategory, double> categoryTotals = {};
-    
-    for (final tx in expenses) {
-      totalExpense += tx.amount;
-      categoryTotals[tx.category] = (categoryTotals[tx.category] ?? 0) + tx.amount;
-    }
-    
-    if (totalExpense == 0) return [];
+  const AnalyticsCalculatorService._();
 
-    final result = categoryTotals.entries.map((e) {
-      return CategorySummary(
-        category: e.key,
-        totalAmount: e.value,
-        percentage: (e.value / totalExpense) * 100,
-      );
-    }).toList();
+  /// Derives every transaction-based analytic in a single traversal.
+  ///
+  /// The category breakdowns, monthly trend and period totals all come from
+  /// the same accumulation pass — computing them separately meant walking the
+  /// same list four times over.
+  static AnalyticsSummary summarize(List<TransactionCollection> transactions) {
+    var totalIncome = 0.0;
+    var totalExpense = 0.0;
 
-    // Sort by amount descending
-    result.sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
-    return result;
-  }
+    final expenseByCategory = <TransactionCategory, double>{};
+    final incomeByCategory = <TransactionCategory, double>{};
 
-  /// Calculates income breakdown by category for a list of transactions.
-  static List<CategorySummary> calculateIncomeSources(List<TransactionCollection> transactions) {
-    final incomes = transactions.where((tx) => tx.type == TransactionType.income);
-    
-    double totalIncome = 0;
-    final Map<TransactionCategory, double> categoryTotals = {};
-    
-    for (final tx in incomes) {
-      totalIncome += tx.amount;
-      categoryTotals[tx.category] = (categoryTotals[tx.category] ?? 0) + tx.amount;
-    }
-    
-    if (totalIncome == 0) return [];
+    // Keyed by months-since-year-zero so the buckets sort chronologically
+    // without string parsing.
+    final incomeByMonth = <int, double>{};
+    final expenseByMonth = <int, double>{};
 
-    final result = categoryTotals.entries.map((e) {
-      return CategorySummary(
-        category: e.key,
-        totalAmount: e.value,
-        percentage: (e.value / totalIncome) * 100,
-      );
-    }).toList();
+    for (final transaction in transactions) {
+      final monthKey = _monthKey(transaction.date);
 
-    // Sort by amount descending
-    result.sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
-    return result;
-  }
-
-  /// Groups transactions by month and returns a list of MonthlySummary.
-  /// Typically expects transactions spanning several months.
-  static List<MonthlySummary> calculateMonthlyTrend(List<TransactionCollection> transactions) {
-    // Map key: "YYYY-MM"
-    final Map<String, MonthlySummary> monthMap = {};
-
-    for (final tx in transactions) {
-      final key = '${tx.date.year}-${tx.date.month.toString().padLeft(2, '0')}';
-      
-      if (!monthMap.containsKey(key)) {
-        monthMap[key] = MonthlySummary(year: tx.date.year, month: tx.date.month, income: 0, expense: 0);
+      switch (transaction.type) {
+        case TransactionType.income:
+          totalIncome += transaction.amount;
+          _add(incomeByCategory, transaction.category, transaction.amount);
+          _add(incomeByMonth, monthKey, transaction.amount);
+        case TransactionType.expense:
+          totalExpense += transaction.amount;
+          _add(expenseByCategory, transaction.category, transaction.amount);
+          _add(expenseByMonth, monthKey, transaction.amount);
       }
-      
-      final current = monthMap[key]!;
-      monthMap[key] = MonthlySummary(
-        year: current.year,
-        month: current.month,
-        income: current.income + (tx.type == TransactionType.income ? tx.amount : 0),
-        expense: current.expense + (tx.type == TransactionType.expense ? tx.amount : 0),
-      );
     }
 
-    final result = monthMap.values.toList();
-    // Sort oldest to newest for charts
-    result.sort((a, b) {
-      if (a.year != b.year) return a.year.compareTo(b.year);
-      return a.month.compareTo(b.month);
-    });
-    
-    return result;
+    final monthKeys = <int>{...incomeByMonth.keys, ...expenseByMonth.keys}
+        .toList()
+      ..sort();
+
+    return AnalyticsSummary(
+      expenseBreakdown: _toCategorySummaries(expenseByCategory, totalExpense),
+      incomeSources: _toCategorySummaries(incomeByCategory, totalIncome),
+      monthlyTrends: [
+        for (final key in monthKeys)
+          MonthlySummary(
+            year: key ~/ 12,
+            month: key % 12 + 1,
+            income: incomeByMonth[key] ?? 0,
+            expense: expenseByMonth[key] ?? 0,
+          ),
+      ],
+      totals: PeriodTotals(income: totalIncome, expense: totalExpense),
+    );
   }
 
-  /// Aggregates all goal data into a GoalAnalytics object.
+  /// Aggregates all goal data into a [GoalAnalytics] object.
   static GoalAnalytics calculateGoalAnalytics(List<GoalCollection> goals) {
-    double totalTarget = 0;
-    double totalSaved = 0;
-    int active = 0;
-    int completed = 0;
+    var totalTarget = 0.0;
+    var totalSaved = 0.0;
+    var active = 0;
+    var completed = 0;
 
     for (final goal in goals) {
       totalTarget += goal.targetAmount;
@@ -111,13 +79,8 @@ class AnalyticsCalculatorService {
       }
     }
 
-    // Sort goals by completion percentage descending
     final sortedGoals = List<GoalCollection>.from(goals)
-      ..sort((a, b) {
-        final aPct = a.targetAmount > 0 ? (a.currentAmount / a.targetAmount) : 0;
-        final bPct = b.targetAmount > 0 ? (b.currentAmount / b.targetAmount) : 0;
-        return bPct.compareTo(aPct);
-      });
+      ..sort((a, b) => _progress(b).compareTo(_progress(a)));
 
     return GoalAnalytics(
       totalGoalTarget: totalTarget,
@@ -126,5 +89,37 @@ class AnalyticsCalculatorService {
       completedGoalsCount: completed,
       goals: sortedGoals,
     );
+  }
+
+  static int _monthKey(DateTime date) => date.year * 12 + (date.month - 1);
+
+  static double _progress(GoalCollection goal) {
+    if (goal.targetAmount <= 0) return 0;
+    return goal.currentAmount / goal.targetAmount;
+  }
+
+  static void _add<K>(Map<K, double> target, K key, double amount) {
+    target.update(key, (value) => value + amount, ifAbsent: () => amount);
+  }
+
+  /// Converts category totals into percentage-bearing summaries, largest
+  /// first. Returns empty when [total] is zero, which also avoids dividing
+  /// by it.
+  static List<CategorySummary> _toCategorySummaries(
+    Map<TransactionCategory, double> totals,
+    double total,
+  ) {
+    if (total <= 0) return const [];
+
+    final summaries = [
+      for (final entry in totals.entries)
+        CategorySummary(
+          category: entry.key,
+          totalAmount: entry.value,
+          percentage: (entry.value / total) * 100,
+        ),
+    ]..sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
+
+    return summaries;
   }
 }

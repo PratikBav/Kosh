@@ -1,5 +1,3 @@
-import '../../../../database/collections/goal_collection.dart';
-import '../../../../database/collections/transaction_collection.dart';
 import '../../../../database/repositories/goals_repository.dart';
 import '../../../../database/repositories/transaction_repository.dart';
 import '../../transactions/models/transaction_type.dart';
@@ -18,33 +16,38 @@ class DashboardRepository {
   /// Fetches all data needed for the dashboard and aggregates it.
   Future<DashboardSummary> getDashboardSummary() async {
     final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
 
-    // 1. Fetch data concurrently
-    final results = await Future.wait([
-      transactionsRepository.getAllTransactions(),
-      transactionsRepository.getMonthlyTransactions(now.year, now.month),
-      goalsRepository.getAllGoals(),
-    ]);
+    // 1. Fetch data concurrently. Awaited separately rather than through
+    // Future.wait, which would erase both element types to dynamic.
+    final transactionsFuture = transactionsRepository.getAllTransactions();
+    final goalsFuture = goalsRepository.getAllGoals();
 
-    final allTx = results[0] as List<TransactionCollection>;
-    final monthlyTx = results[1] as List<TransactionCollection>;
-    final allGoals = results[2] as List<GoalCollection>;
+    final allTx = await transactionsFuture;
+    final allGoals = await goalsFuture;
 
-    // 2. Aggregate Transactions
+    // 2. Aggregate transactions in a single pass. The month's figures are
+    // derived here too, rather than issuing a second query for rows already
+    // in hand.
     double totalIncome = 0;
     double totalExpense = 0;
-    for (final tx in allTx) {
-      if (tx.type == TransactionType.income) totalIncome += tx.amount;
-      if (tx.type == TransactionType.expense) totalExpense += tx.amount;
-    }
-    final netSavings = totalIncome - totalExpense;
-
     double monthlyIncome = 0;
     double monthlyExpense = 0;
-    for (final tx in monthlyTx) {
-      if (tx.type == TransactionType.income) monthlyIncome += tx.amount;
-      if (tx.type == TransactionType.expense) monthlyExpense += tx.amount;
+
+    for (final tx in allTx) {
+      final isThisMonth = !tx.date.isBefore(monthStart);
+
+      switch (tx.type) {
+        case TransactionType.income:
+          totalIncome += tx.amount;
+          if (isThisMonth) monthlyIncome += tx.amount;
+        case TransactionType.expense:
+          totalExpense += tx.amount;
+          if (isThisMonth) monthlyExpense += tx.amount;
+      }
     }
+
+    final netSavings = totalIncome - totalExpense;
 
     // Savings Rate (Monthly)
     double savingsRate = 0;
@@ -55,10 +58,8 @@ class DashboardRepository {
       }
     }
 
-    // Recent Transactions (top 5 by date)
-    final sortedTx = List<TransactionCollection>.from(allTx)
-      ..sort((a, b) => b.date.compareTo(a.date));
-    final recentTransactions = sortedTx.take(5).toList();
+    // Recent Transactions — the repository already returns them newest first.
+    final recentTransactions = allTx.take(5).toList();
 
     // 3. Aggregate Goals
     int activeGoalsCount = 0;

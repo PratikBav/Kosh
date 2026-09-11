@@ -1,6 +1,8 @@
+import '../models/analytics_summary.dart';
 import '../models/category_summary.dart';
 import '../models/goal_analytics.dart';
 import '../models/monthly_summary.dart';
+import '../repository/analytics_repository.dart';
 
 enum TimeFilter { thisMonth, lastMonth, threeMonths, sixMonths, oneYear, allTime }
 
@@ -49,42 +51,46 @@ class AnalyticsState {
   const AnalyticsState({
     this.isLoading = true,
     this.selectedTimeFilter = TimeFilter.thisMonth,
-    this.expenseBreakdown = const [],
-    this.incomeSources = const [],
-    this.monthlyTrends = const [],
-    this.goalAnalytics,
-    this.overallSummary = const {},
+    this.report,
     this.error,
   });
 
   final bool isLoading;
   final TimeFilter selectedTimeFilter;
-  final List<CategorySummary> expenseBreakdown;
-  final List<CategorySummary> incomeSources;
-  final List<MonthlySummary> monthlyTrends;
-  final GoalAnalytics? goalAnalytics;
-  final Map<String, double> overallSummary;
+
+  /// Null until the first load completes.
+  final AnalyticsReport? report;
+
   final String? error;
+
+  /// Whether a report has already been loaded, so a background refresh can
+  /// leave the current content on screen instead of flashing a spinner.
+  bool get hasData => report != null;
+
+  AnalyticsSummary get summary => report?.summary ?? const AnalyticsSummary.empty();
+
+  List<CategorySummary> get expenseBreakdown => summary.expenseBreakdown;
+
+  List<CategorySummary> get incomeSources => summary.incomeSources;
+
+  List<MonthlySummary> get monthlyTrends => summary.monthlyTrends;
+
+  PeriodTotals get totals => summary.totals;
+
+  GoalAnalytics? get goalAnalytics => report?.goals;
 
   AnalyticsState copyWith({
     bool? isLoading,
     TimeFilter? selectedTimeFilter,
-    List<CategorySummary>? expenseBreakdown,
-    List<CategorySummary>? incomeSources,
-    List<MonthlySummary>? monthlyTrends,
-    GoalAnalytics? goalAnalytics,
-    Map<String, double>? overallSummary,
+    AnalyticsReport? report,
     String? error,
+    bool clearError = false,
   }) {
     return AnalyticsState(
       isLoading: isLoading ?? this.isLoading,
       selectedTimeFilter: selectedTimeFilter ?? this.selectedTimeFilter,
-      expenseBreakdown: expenseBreakdown ?? this.expenseBreakdown,
-      incomeSources: incomeSources ?? this.incomeSources,
-      monthlyTrends: monthlyTrends ?? this.monthlyTrends,
-      goalAnalytics: goalAnalytics ?? this.goalAnalytics,
-      overallSummary: overallSummary ?? this.overallSummary,
-      error: error,
+      report: report ?? this.report,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 }

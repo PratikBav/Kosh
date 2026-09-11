@@ -1,34 +1,35 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
+import '../../../../core/utils/change_debouncer.dart';
 import '../../../../database/collections/contribution_collection.dart';
 import '../../../../database/collections/goal_collection.dart';
 import '../../../../database/collections/transaction_collection.dart';
 import '../../../../providers/database_providers.dart';
 import '../../../../providers/repository_providers.dart';
-import '../models/category_summary.dart';
-import '../models/monthly_summary.dart';
 import '../repository/analytics_repository.dart';
 import 'analytics_state.dart';
 
-final analyticsViewModelProvider = StateNotifierProvider<AnalyticsViewModel, AnalyticsState>((ref) {
+final analyticsViewModelProvider =
+    StateNotifierProvider<AnalyticsViewModel, AnalyticsState>((ref) {
   final isar = ref.watch(isarProvider);
   final repo = ref.watch(analyticsRepositoryProvider);
   return AnalyticsViewModel(isar, repo);
 });
 
 class AnalyticsViewModel extends StateNotifier<AnalyticsState> {
-  AnalyticsViewModel(this._isar, this._repository) : super(const AnalyticsState()) {
+  AnalyticsViewModel(this._isar, this._repository)
+      : super(const AnalyticsState()) {
     _init();
   }
 
   final Isar _isar;
   final AnalyticsRepository _repository;
-  
-  StreamSubscription<void>? _transactionsSub;
-  StreamSubscription<void>? _goalsSub;
-  StreamSubscription<void>? _contributionsSub;
+
+  final List<StreamSubscription<void>> _subscriptions = [];
+  final ChangeDebouncer _debouncer = ChangeDebouncer();
 
   void _init() {
     loadAnalytics();
@@ -36,9 +37,17 @@ class AnalyticsViewModel extends StateNotifier<AnalyticsState> {
   }
 
   void _setupWatchers() {
-    _transactionsSub = _isar.transactionCollections.watchLazy().listen((_) => loadAnalytics());
-    _goalsSub = _isar.goalCollections.watchLazy().listen((_) => loadAnalytics());
-    _contributionsSub = _isar.contributionCollections.watchLazy().listen((_) => loadAnalytics());
+    // All three feed the same report, and one edit commonly touches two of
+    // them, so the reload is debounced into a single pass.
+    for (final stream in [
+      _isar.transactionCollections.watchLazy(),
+      _isar.goalCollections.watchLazy(),
+      _isar.contributionCollections.watchLazy(),
+    ]) {
+      _subscriptions.add(
+        stream.listen((_) => _debouncer.run(loadAnalytics)),
+      );
+    }
   }
 
   void setTimeFilter(TimeFilter filter) {
@@ -49,48 +58,37 @@ class AnalyticsViewModel extends StateNotifier<AnalyticsState> {
 
   Future<void> loadAnalytics() async {
     try {
-      if (state.expenseBreakdown.isEmpty) {
-        state = state.copyWith(isLoading: true, error: null);
+      // Only show the spinner on a cold load; a refresh behind existing
+      // content should not blank the screen.
+      if (!state.hasData) {
+        state = state.copyWith(isLoading: true, clearError: true);
       }
-      
+
       final filter = state.selectedTimeFilter;
-      final start = filter.startDate;
-      final end = filter.endDate;
+      final report = await _repository.getReport(
+        filter.startDate,
+        filter.endDate,
+      );
 
-      final results = await Future.wait([
-        _repository.getExpenseAnalytics(start, end),
-        _repository.getIncomeAnalytics(start, end),
-        _repository.getMonthlyTrends(start, end),
-        _repository.getGoalAnalytics(),
-        _repository.getOverallSummary(start, end),
-      ]);
+      if (!mounted) return;
 
-      if (mounted) {
-        state = state.copyWith(
-          isLoading: false,
-          expenseBreakdown: results[0] as List<CategorySummary>,
-          incomeSources: results[1] as List<CategorySummary>,
-          monthlyTrends: results[2] as List<MonthlySummary>,
-          goalAnalytics: results[3] as dynamic,
-          overallSummary: results[4] as Map<String, double>,
-          error: null,
-        );
-      }
+      state = state.copyWith(
+        isLoading: false,
+        report: report,
+        clearError: true,
+      );
     } catch (e) {
-      if (mounted) {
-        state = state.copyWith(
-          isLoading: false,
-          error: e.toString(),
-        );
-      }
+      if (!mounted) return;
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
   @override
   void dispose() {
-    _transactionsSub?.cancel();
-    _goalsSub?.cancel();
-    _contributionsSub?.cancel();
+    _debouncer.dispose();
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
     super.dispose();
   }
 }

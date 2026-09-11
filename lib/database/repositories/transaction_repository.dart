@@ -44,12 +44,35 @@ class TransactionRepository {
     final startDate = DateTime(year, month, 1);
     final endDate = DateTime(year, month + 1, 0, 23, 59, 59, 999);
 
+    return getTransactionsBetween(startDate, endDate);
+  }
+
+  /// Gets transactions in an inclusive date range, newest first.
+  ///
+  /// Uses the `date` index rather than loading every row and filtering in
+  /// Dart, which is what the analytics layer used to do on every refresh.
+  Future<List<TransactionCollection>> getTransactionsBetween(
+    DateTime start,
+    DateTime end,
+  ) async {
     return await _isar.transactionCollections
         .where()
-        .dateBetween(startDate, endDate)
+        .dateBetween(start, end)
         .sortByDateDesc()
         .findAll();
   }
+
+  /// Sums every amount of [type] without materialising the rows.
+  Future<double> totalAmountByType(TransactionType type) {
+    return _isar.transactionCollections
+        .where()
+        .typeEqualTo(type)
+        .amountProperty()
+        .sum();
+  }
+
+  /// Total number of transactions on record.
+  Future<int> count() => _isar.transactionCollections.count();
 
   /// Gets transactions by category.
   Future<List<TransactionCollection>> getTransactionsByCategory(TransactionCategory category) async {
