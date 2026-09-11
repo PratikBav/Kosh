@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/services/finance_calculator_service.dart';
+import '../../../../core/utils/currency_utils.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/kosh_textfield.dart';
 import '../../../../shared/widgets/loading_indicator.dart';
@@ -16,9 +17,13 @@ import '../../settings/viewmodel/theme_viewmodel.dart';
 import '../widgets/filter_sheet.dart';
 import '../widgets/transaction_card.dart';
 
-/// Main screen for transactions list.
+/// Main screen for the transactions list.
 class TransactionsView extends ConsumerWidget {
   const TransactionsView({super.key});
+
+  /// Clearance for the floating navigation bar and FAB.
+  static const double _navBarClearance = 140;
+  static const double _fabLift = 96;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,132 +42,134 @@ class TransactionsView extends ConsumerWidget {
         title: const Text('Transactions'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.download_rounded),
-            onPressed: () {
-              // Future export feature
-            },
-          ),
-          IconButton(
-            icon: Stack(
-              children: [
-                const Icon(Icons.filter_list_rounded),
-                if (hasActiveFilters)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
+            tooltip: 'Filter',
+            icon: Badge(
+              isLabelVisible: hasActiveFilters,
+              backgroundColor: AppColors.primary,
+              smallSize: 8,
+              child: const Icon(Icons.tune_rounded),
             ),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => const FilterSheet(),
-              );
-            },
+            onPressed: () => _openFilterSheet(context),
           ),
+          const SizedBox(width: AppSpacing.xs),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => viewModel.loadTransactions(),
+        onRefresh: viewModel.loadTransactions,
         color: AppColors.primary,
         backgroundColor: AppColors.surfaceLight,
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            // Search Bar & Filters
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                ),
                 child: Column(
                   children: [
                     KoshTextField(
-                      hint: 'Search transactions...',
+                      hint: 'Search transactions',
                       prefixIcon: Icons.search_rounded,
-                      onChanged: (value) => viewModel.searchTransactions(value),
-                      suffixIcon: state.searchQuery.isNotEmpty ? Icons.close_rounded : null,
-                      onSuffixTap: () {
-                        viewModel.searchTransactions('');
-                      },
+                      onChanged: viewModel.searchTransactions,
+                      suffixIcon: state.searchQuery.isNotEmpty
+                          ? Icons.close_rounded
+                          : null,
+                      onSuffixTap: () => viewModel.searchTransactions(''),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      child: Row(
-                        children: [
-                          _buildFilterChip('All', state.selectedTypeFilter == null, () => viewModel.setTypeFilter(null)),
-                          const SizedBox(width: 8),
-                          _buildFilterChip('Income', state.selectedTypeFilter == TransactionType.income, () => viewModel.setTypeFilter(TransactionType.income)),
-                          const SizedBox(width: 8),
-                          _buildFilterChip('Expense', state.selectedTypeFilter == TransactionType.expense, () => viewModel.setTypeFilter(TransactionType.expense)),
-                          const SizedBox(width: 8),
-                          ActionChip(
-                            label: const Text('Categories'),
-                            avatar: const Icon(Icons.category_rounded, size: 16),
-                            backgroundColor: AppColors.surfaceLight,
-                            side: BorderSide.none,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                            onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => const FilterSheet(),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                    const SizedBox(height: AppSpacing.ms),
+                    Row(
+                      children: [
+                        _TypeChip(
+                          label: 'All',
+                          isSelected: state.selectedTypeFilter == null,
+                          onTap: () => viewModel.setTypeFilter(null),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        _TypeChip(
+                          label: 'Income',
+                          isSelected: state.selectedTypeFilter ==
+                              TransactionType.income,
+                          onTap: () =>
+                              viewModel.setTypeFilter(TransactionType.income),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        _TypeChip(
+                          label: 'Expense',
+                          isSelected: state.selectedTypeFilter ==
+                              TransactionType.expense,
+                          onTap: () =>
+                              viewModel.setTypeFilter(TransactionType.expense),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
 
-            // Horizontal Summary Cards
-            if (state.searchQuery.isEmpty && !hasActiveFilters)
+            // The month summary is only meaningful over the unfiltered set.
+            if (!hasActiveFilters)
               SliverToBoxAdapter(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
                   child: Row(
                     children: [
-                      _buildSummaryStatCard('Income', summary['income'] ?? 0, AppColors.success, Icons.arrow_downward_rounded),
-                      const SizedBox(width: AppSpacing.md),
-                      _buildSummaryStatCard('Expense', summary['expense'] ?? 0, AppColors.danger, Icons.arrow_upward_rounded),
-                      const SizedBox(width: AppSpacing.md),
-                      _buildSummaryStatCard('Net Savings', summary['net'] ?? 0, AppColors.primary, Icons.account_balance_wallet_rounded),
+                      Expanded(
+                        child: _SummaryStat(
+                          label: 'Income',
+                          amount: summary['income'] ?? 0,
+                          color: AppColors.success,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _SummaryStat(
+                          label: 'Spent',
+                          amount: summary['expense'] ?? 0,
+                          color: AppColors.danger,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: _SummaryStat(
+                          label: 'Net',
+                          amount: summary['net'] ?? 0,
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            
+
             const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
 
-            // Transactions List or Empty State
             if (state.isLoading && state.transactions.isEmpty)
               const SliverFillRemaining(
+                hasScrollBody: false,
                 child: LoadingIndicator(message: 'Loading transactions...'),
               )
             else if (state.filteredTransactions.isEmpty)
               SliverFillRemaining(
+                hasScrollBody: false,
                 child: EmptyState(
-                  icon: hasActiveFilters ? Icons.search_off_rounded : Icons.swap_horiz_rounded,
-                  title: hasActiveFilters ? 'No matches found' : 'No Transactions Yet',
+                  icon: hasActiveFilters
+                      ? Icons.search_off_rounded
+                      : Icons.swap_horiz_rounded,
+                  title: hasActiveFilters
+                      ? 'No matches found'
+                      : 'No transactions yet',
                   description: hasActiveFilters
-                      ? 'Try adjusting your filters or search query.'
-                      : 'Your income and expenses will appear here.\nStart tracking your finances!',
-                  actionLabel: hasActiveFilters ? 'Clear Filters' : 'Add Transaction',
+                      ? 'Try adjusting your filters or search.'
+                      : 'Your income and expenses will appear here.',
+                  actionLabel:
+                      hasActiveFilters ? 'Clear filters' : 'Add transaction',
                   onAction: () {
                     if (hasActiveFilters) {
                       viewModel.setTypeFilter(null);
@@ -172,41 +179,40 @@ class TransactionsView extends ConsumerWidget {
                       context.pushNamed(RouteConstants.addTransaction);
                     }
                   },
-                ).animate().fadeIn(duration: 500.ms),
+                ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final transaction = state.filteredTransactions[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                        child: TransactionCard(
-                          transaction: transaction,
-                          onTap: () {
-                            context.pushNamed(
-                              RouteConstants.transactionDetails,
-                              pathParameters: {'id': transaction.id.toString()},
-                            );
-                          },
-                        ).animate().fadeIn(duration: 400.ms, delay: (index * 50).ms).slideX(begin: 0.05, end: 0),
-                      );
-                    },
-                    childCount: state.filteredTransactions.length,
-                  ),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  0,
+                  AppSpacing.md,
+                  _navBarClearance,
+                ),
+                sliver: SliverList.separated(
+                  itemCount: state.filteredTransactions.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, index) {
+                    final transaction = state.filteredTransactions[index];
+                    return TransactionCard(
+                      transaction: transaction,
+                      onTap: () => context.pushNamed(
+                        RouteConstants.transactionDetails,
+                        pathParameters: {'id': transaction.id.toString()},
+                      ),
+                    );
+                  },
                 ),
               ),
-            
-            const SliverToBoxAdapter(child: SizedBox(height: 160)), // FAB padding
           ],
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 110.0),
+        padding: const EdgeInsets.only(bottom: _fabLift),
         child: FloatingActionButton(
           heroTag: 'transactions_fab',
+          tooltip: 'Add transaction',
           onPressed: () => context.pushNamed(RouteConstants.addTransaction),
           child: const Icon(Icons.add_rounded, color: Colors.white),
         ),
@@ -214,52 +220,84 @@ class TransactionsView extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilterChip(String label, bool isSelected, VoidCallback onTap) {
+  void _openFilterSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const FilterSheet(),
+    );
+  }
+}
+
+class _TypeChip extends StatelessWidget {
+  const _TypeChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return FilterChip(
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => onTap(),
-      backgroundColor: AppColors.surfaceLight,
-      selectedColor: AppColors.primary.withValues(alpha: 0.2),
-      checkmarkColor: AppColors.primary,
-      labelStyle: TextStyle(
+      showCheckmark: false,
+      backgroundColor: AppColors.surface,
+      selectedColor: AppColors.primary.withValues(alpha: 0.16),
+      labelStyle: AppTextStyles.captionBold.copyWith(
         color: isSelected ? AppColors.primary : AppColors.textSecondary,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
-      side: isSelected ? BorderSide(color: AppColors.primary) : BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      side: BorderSide(
+        color: isSelected ? AppColors.primary : AppColors.surfaceBorder,
+      ),
+      shape: const StadiumBorder(),
     );
   }
+}
 
-  Widget _buildSummaryStatCard(String title, double amount, Color color, IconData icon) {
-    // We should ideally inject NumberFormat, but inline for now
-    final formattedAmount = '₹${amount.toStringAsFixed(0)}';
+/// One figure in the month summary row.
+class _SummaryStat extends StatelessWidget {
+  const _SummaryStat({
+    required this.label,
+    required this.amount,
+    required this.color,
+  });
+
+  final String label;
+  final double amount;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: 160,
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.ms,
+        vertical: AppSpacing.ms,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.glassBorder),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.surfaceBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(width: 8),
-              Text(title, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            formattedAmount,
-            style: TextStyle(
-              color: color,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
+          Text(label, style: AppTextStyles.caption),
+          const SizedBox(height: AppSpacing.xs),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              // Compact so a large figure cannot overflow a third of the row.
+              CurrencyUtils.formatCompact(amount),
+              style: AppTextStyles.amountSmall.copyWith(color: color),
             ),
           ),
         ],

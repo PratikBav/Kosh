@@ -36,28 +36,6 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-  static const LinearGradient surfaceGradient = LinearGradient(
-    colors: [surface, Color(0xFF0E1422)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
-
-  static const LinearGradient cardGradient = LinearGradient(
-    colors: [
-      Color(0xFF1A2235),
-      Color(0xFF131A2A),
-    ],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static Color glassBackground = Colors.white.withValues(alpha: 0.03);
-  static Color glassBorder = Colors.white.withValues(alpha: 0.05);
-  static Color glassHighlight = Colors.white.withValues(alpha: 0.1);
-
-  static const Color shimmerBase = Color(0xFF1A2235);
-  static const Color shimmerHighlight = Color(0xFF243045);
-
   static const Color navBarBackground = Color(0xFF0D1220);
   static Color get navBarActive => primary;
   static const Color navBarInactive = textTertiary;

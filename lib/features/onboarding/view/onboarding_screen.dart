@@ -138,7 +138,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   end: Alignment.bottomRight,
                                 ),
                                 border: Border.all(
-                                  color: AppColors.glassBorder,
+                                  color: AppColors.surfaceBorder,
                                   width: 2,
                                 ),
                               ),

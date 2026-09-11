@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../core/utils/currency_utils.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../shared/cards/kosh_card.dart';
@@ -34,11 +35,6 @@ class TransactionDetailsScreen extends ConsumerWidget {
       );
     }
 
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_IN',
-      symbol: '₹',
-      decimalDigits: 2,
-    );
     final dateFormat = DateFormat('dd MMMM yyyy, hh:mm a');
     
     final isIncome = transaction.type == TransactionType.income;
@@ -93,7 +89,7 @@ class TransactionDetailsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    '${isIncome ? '+' : '-'}${currencyFormat.format(transaction.amount)}',
+                    '${isIncome ? '+' : '-'}${CurrencyUtils.formatPrecise(transaction.amount)}',
                     style: AppTextStyles.displayMedium.copyWith(color: typeColor),
                   ),
                   const SizedBox(height: AppSpacing.sm),

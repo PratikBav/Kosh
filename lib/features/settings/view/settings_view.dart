@@ -25,6 +25,7 @@ class SettingsView extends ConsumerWidget {
     ref.watch(themeViewModelProvider);
     final securityState = ref.watch(securityViewModelProvider);
     final settings = securityState.settings;
+    final gamification = ref.watch(gamificationViewModelProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -74,7 +75,12 @@ class SettingsView extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Pratik', style: AppTextStyles.title),
+                            // Real progress rather than a hardcoded name and a
+                            // "Pro Member" badge for a tier that does not exist.
+                            Text(
+                              gamification.currentLevelName,
+                              style: AppTextStyles.title,
+                            ),
                             const SizedBox(height: 4),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -83,7 +89,14 @@ class SettingsView extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
                               ),
-                              child: Text('Kosh Pro Member', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                'Level ${gamification.progress?.currentLevel ?? 1}'
+                                '  ·  ${gamification.progress?.totalXp ?? 0} XP',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -101,7 +114,7 @@ class SettingsView extends ConsumerWidget {
                     icon: settings?.isAppLockEnabled == true ? Icons.lock_rounded : Icons.lock_open_rounded,
                     iconColor: settings?.isAppLockEnabled == true ? AppColors.success : AppColors.warning,
                     title: 'App Lock',
-                    subtitle: settings?.isAppLockEnabled == true ? 'Protected with biometrics' : 'Not protected',
+                    subtitle: settings?.isAppLockEnabled == true ? 'PIN lock is on' : 'Not protected',
                     onTap: () => context.pushNamed(RouteConstants.securitySettings),
                   ),
                 ]),
@@ -115,14 +128,14 @@ class SettingsView extends ConsumerWidget {
                     icon: Icons.palette_rounded,
                     iconColor: AppColors.primary,
                     title: 'Appearance',
-                    subtitle: 'Glassmorphic Dark Mode',
+                    subtitle: 'Accent colour and theme',
                     onTap: () => context.goNamed('appearance'),
                   ),
                   _SettingItem(
                     icon: Icons.shield_rounded,
                     iconColor: AppColors.secondary,
                     title: 'Privacy Center',
-                    subtitle: 'Local Data & Trust',
+                    subtitle: 'How your data is stored',
                     onTap: () => context.pushNamed(RouteConstants.privacy),
                   ),
                 ]),
@@ -172,7 +185,7 @@ class SettingsView extends ConsumerWidget {
           backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            side: BorderSide(color: AppColors.glassBorder),
+            side: BorderSide(color: AppColors.surfaceBorder),
           ),
           title: Row(
             children: [
@@ -233,13 +246,21 @@ class SettingsView extends ConsumerWidget {
   }
 
   Widget _buildSettingsGroup(List<_SettingItem> items) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.glassBorder),
-      ),
-      child: Column(
+    final radius = BorderRadius.circular(AppSpacing.radiusLg);
+
+    // The surface colour belongs on a Material, not on a Container wrapping
+    // one. ListTile paints its ink on the nearest Material ancestor, so a
+    // coloured box in between hid every tap ripple on this screen.
+    return Material(
+      color: AppColors.surface,
+      borderRadius: radius,
+      clipBehavior: Clip.antiAlias,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          border: Border.all(color: AppColors.surfaceBorder),
+        ),
+        child: Column(
         children: items.asMap().entries.map((entry) {
           final index = entry.key;
           final item = entry.value;
@@ -282,6 +303,7 @@ class SettingsView extends ConsumerWidget {
             ],
           );
         }).toList(),
+        ),
       ),
     );
   }

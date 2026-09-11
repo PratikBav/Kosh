@@ -55,7 +55,7 @@ class GoalCard extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
-                border: Border.all(color: AppColors.glassBorder),
+                border: Border.all(color: AppColors.surfaceBorder),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Column(

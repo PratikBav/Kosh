@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../core/utils/currency_utils.dart';
 import '../../../../database/collections/goal_collection.dart';
 
 class GoalSpotlightCard extends StatelessWidget {
@@ -13,7 +13,6 @@ class GoalSpotlightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(symbol: '₹', decimalDigits: 0, locale: 'en_IN');
     final progress = goal.currentAmount / goal.targetAmount;
     final percent = (progress * 100).clamp(0, 100).toInt();
     
@@ -84,7 +83,7 @@ class GoalSpotlightCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${currencyFormat.format(goal.currentAmount)} / ${currencyFormat.format(goal.targetAmount)}',
+                            '${CurrencyUtils.format(goal.currentAmount)} / ${CurrencyUtils.format(goal.targetAmount)}',
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,

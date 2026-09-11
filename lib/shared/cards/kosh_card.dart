@@ -1,19 +1,18 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_spacing.dart';
 
-/// Glassmorphism-style card used throughout the Kosh app.
+/// The standard surface container used throughout Kosh.
 ///
-/// Features a frosted-glass background, subtle gradient border,
-/// and optional glow effect. Designed for the dark futuristic theme.
+/// A flat, bordered panel rather than a frosted one: the app background is
+/// opaque, so a backdrop blur had nothing to sample and only cost a GPU pass
+/// per card while softening the edges it was meant to define.
 ///
 /// ```dart
 /// KoshCard(
+///   onTap: _openDetails,
 ///   child: Text('Balance'),
-///   padding: EdgeInsets.all(AppSpacing.md),
 /// )
 /// ```
 class KoshCard extends StatelessWidget {
@@ -24,7 +23,9 @@ class KoshCard extends StatelessWidget {
     this.margin,
     this.borderRadius,
     this.gradient,
+    this.color,
     this.showBorder = true,
+    this.borderColor,
     this.showGlow = false,
     this.glowColor,
     this.onTap,
@@ -36,8 +37,13 @@ class KoshCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double? borderRadius;
+
+  /// Overrides the flat [color] when a card needs emphasis.
   final Gradient? gradient;
+
+  final Color? color;
   final bool showBorder;
+  final Color? borderColor;
   final bool showGlow;
   final Color? glowColor;
   final VoidCallback? onTap;
@@ -46,47 +52,44 @@ class KoshCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = borderRadius ?? 24.0;
-    final effectiveGlowColor = glowColor ?? AppColors.primary;
+    final radius = BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl);
+    final effectiveGlow = glowColor ?? AppColors.primary;
 
-    Widget card = ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          width: width,
-          height: height,
-          padding: padding ?? const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            gradient: gradient ?? AppColors.cardGradient,
-            borderRadius: BorderRadius.circular(radius),
-            border: showBorder
-                ? Border.all(
-                    color: AppColors.glassBorder,
-                    width: 1,
-                  )
-                : null,
-            boxShadow: showGlow
-                ? [
-                    BoxShadow(
-                      color: effectiveGlowColor.withValues(alpha: 0.15),
-                      blurRadius: 20,
-                      spreadRadius: -4,
-                    ),
-                  ]
-                : null,
+    Widget card = Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: gradient == null ? (color ?? AppColors.surface) : null,
+        gradient: gradient,
+        borderRadius: radius,
+        border: showBorder
+            ? Border.all(color: borderColor ?? AppColors.surfaceBorder)
+            : null,
+        boxShadow: showGlow
+            ? [
+                BoxShadow(
+                  color: effectiveGlow.withValues(alpha: 0.18),
+                  blurRadius: 24,
+                  spreadRadius: -6,
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        // Transparent Material lets the ink ripple paint over the decoration
+        // above without a second opaque layer hiding the border.
+        type: MaterialType.transparency,
+        borderRadius: radius,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Padding(
+            padding: padding ?? const EdgeInsets.all(AppSpacing.md),
+            child: child,
           ),
-          child: child,
         ),
       ),
     );
-
-    if (onTap != null) {
-      card = GestureDetector(
-        onTap: onTap,
-        child: card,
-      );
-    }
 
     if (margin != null) {
       card = Padding(padding: margin!, child: card);
