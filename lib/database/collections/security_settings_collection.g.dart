@@ -23,14 +23,34 @@ const SecuritySettingsCollectionSchema = CollectionSchema(
       name: r'autoLockDuration',
       type: IsarType.long,
     ),
-    r'isAppLockEnabled': PropertySchema(
+    r'failedPinAttempts': PropertySchema(
       id: 1,
+      name: r'failedPinAttempts',
+      type: IsarType.long,
+    ),
+    r'isAppLockEnabled': PropertySchema(
+      id: 2,
       name: r'isAppLockEnabled',
       type: IsarType.bool,
     ),
+    r'isBiometricEnabled': PropertySchema(
+      id: 3,
+      name: r'isBiometricEnabled',
+      type: IsarType.bool,
+    ),
+    r'isScreenSecurityEnabled': PropertySchema(
+      id: 4,
+      name: r'isScreenSecurityEnabled',
+      type: IsarType.bool,
+    ),
     r'lastUnlockedAt': PropertySchema(
-      id: 2,
+      id: 5,
       name: r'lastUnlockedAt',
+      type: IsarType.dateTime,
+    ),
+    r'pinLockoutUntil': PropertySchema(
+      id: 6,
+      name: r'pinLockoutUntil',
       type: IsarType.dateTime,
     )
   },
@@ -64,8 +84,12 @@ void _securitySettingsCollectionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.autoLockDuration);
-  writer.writeBool(offsets[1], object.isAppLockEnabled);
-  writer.writeDateTime(offsets[2], object.lastUnlockedAt);
+  writer.writeLong(offsets[1], object.failedPinAttempts);
+  writer.writeBool(offsets[2], object.isAppLockEnabled);
+  writer.writeBool(offsets[3], object.isBiometricEnabled);
+  writer.writeBool(offsets[4], object.isScreenSecurityEnabled);
+  writer.writeDateTime(offsets[5], object.lastUnlockedAt);
+  writer.writeDateTime(offsets[6], object.pinLockoutUntil);
 }
 
 SecuritySettingsCollection _securitySettingsCollectionDeserialize(
@@ -76,9 +100,13 @@ SecuritySettingsCollection _securitySettingsCollectionDeserialize(
 ) {
   final object = SecuritySettingsCollection();
   object.autoLockDuration = reader.readLong(offsets[0]);
+  object.failedPinAttempts = reader.readLong(offsets[1]);
   object.id = id;
-  object.isAppLockEnabled = reader.readBool(offsets[1]);
-  object.lastUnlockedAt = reader.readDateTimeOrNull(offsets[2]);
+  object.isAppLockEnabled = reader.readBool(offsets[2]);
+  object.isBiometricEnabled = reader.readBool(offsets[3]);
+  object.isScreenSecurityEnabled = reader.readBool(offsets[4]);
+  object.lastUnlockedAt = reader.readDateTimeOrNull(offsets[5]);
+  object.pinLockoutUntil = reader.readDateTimeOrNull(offsets[6]);
   return object;
 }
 
@@ -92,8 +120,16 @@ P _securitySettingsCollectionDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
+      return (reader.readBool(offset)) as P;
+    case 3:
+      return (reader.readBool(offset)) as P;
+    case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 6:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -254,6 +290,62 @@ extension SecuritySettingsCollectionQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> failedPinAttemptsEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'failedPinAttempts',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> failedPinAttemptsGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'failedPinAttempts',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> failedPinAttemptsLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'failedPinAttempts',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> failedPinAttemptsBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'failedPinAttempts',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
       QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -314,6 +406,26 @@ extension SecuritySettingsCollectionQueryFilter on QueryBuilder<
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isAppLockEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> isBiometricEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isBiometricEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> isScreenSecurityEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isScreenSecurityEnabled',
         value: value,
       ));
     });
@@ -392,6 +504,80 @@ extension SecuritySettingsCollectionQueryFilter on QueryBuilder<
       ));
     });
   }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> pinLockoutUntilIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'pinLockoutUntil',
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> pinLockoutUntilIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'pinLockoutUntil',
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> pinLockoutUntilEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'pinLockoutUntil',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> pinLockoutUntilGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'pinLockoutUntil',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> pinLockoutUntilLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'pinLockoutUntil',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterFilterCondition> pinLockoutUntilBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'pinLockoutUntil',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension SecuritySettingsCollectionQueryObject on QueryBuilder<
@@ -417,6 +603,20 @@ extension SecuritySettingsCollectionQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByFailedPinAttempts() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'failedPinAttempts', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByFailedPinAttemptsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'failedPinAttempts', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
       QAfterSortBy> sortByIsAppLockEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isAppLockEnabled', Sort.asc);
@@ -431,6 +631,34 @@ extension SecuritySettingsCollectionQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByIsBiometricEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBiometricEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByIsBiometricEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBiometricEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByIsScreenSecurityEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isScreenSecurityEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByIsScreenSecurityEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isScreenSecurityEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
       QAfterSortBy> sortByLastUnlockedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastUnlockedAt', Sort.asc);
@@ -441,6 +669,20 @@ extension SecuritySettingsCollectionQuerySortBy on QueryBuilder<
       QAfterSortBy> sortByLastUnlockedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastUnlockedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByPinLockoutUntil() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinLockoutUntil', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> sortByPinLockoutUntilDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinLockoutUntil', Sort.desc);
     });
   }
 }
@@ -458,6 +700,20 @@ extension SecuritySettingsCollectionQuerySortThenBy on QueryBuilder<
       QAfterSortBy> thenByAutoLockDurationDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'autoLockDuration', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByFailedPinAttempts() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'failedPinAttempts', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByFailedPinAttemptsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'failedPinAttempts', Sort.desc);
     });
   }
 
@@ -490,6 +746,34 @@ extension SecuritySettingsCollectionQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByIsBiometricEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBiometricEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByIsBiometricEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBiometricEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByIsScreenSecurityEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isScreenSecurityEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByIsScreenSecurityEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isScreenSecurityEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
       QAfterSortBy> thenByLastUnlockedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastUnlockedAt', Sort.asc);
@@ -500,6 +784,20 @@ extension SecuritySettingsCollectionQuerySortThenBy on QueryBuilder<
       QAfterSortBy> thenByLastUnlockedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastUnlockedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByPinLockoutUntil() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinLockoutUntil', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QAfterSortBy> thenByPinLockoutUntilDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinLockoutUntil', Sort.desc);
     });
   }
 }
@@ -514,6 +812,13 @@ extension SecuritySettingsCollectionQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QDistinct> distinctByFailedPinAttempts() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'failedPinAttempts');
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
       QDistinct> distinctByIsAppLockEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isAppLockEnabled');
@@ -521,9 +826,30 @@ extension SecuritySettingsCollectionQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QDistinct> distinctByIsBiometricEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isBiometricEnabled');
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QDistinct> distinctByIsScreenSecurityEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isScreenSecurityEnabled');
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
       QDistinct> distinctByLastUnlockedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastUnlockedAt');
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, SecuritySettingsCollection,
+      QDistinct> distinctByPinLockoutUntil() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'pinLockoutUntil');
     });
   }
 }
@@ -543,6 +869,13 @@ extension SecuritySettingsCollectionQueryProperty on QueryBuilder<
     });
   }
 
+  QueryBuilder<SecuritySettingsCollection, int, QQueryOperations>
+      failedPinAttemptsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'failedPinAttempts');
+    });
+  }
+
   QueryBuilder<SecuritySettingsCollection, bool, QQueryOperations>
       isAppLockEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -550,10 +883,31 @@ extension SecuritySettingsCollectionQueryProperty on QueryBuilder<
     });
   }
 
+  QueryBuilder<SecuritySettingsCollection, bool, QQueryOperations>
+      isBiometricEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isBiometricEnabled');
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, bool, QQueryOperations>
+      isScreenSecurityEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isScreenSecurityEnabled');
+    });
+  }
+
   QueryBuilder<SecuritySettingsCollection, DateTime?, QQueryOperations>
       lastUnlockedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastUnlockedAt');
+    });
+  }
+
+  QueryBuilder<SecuritySettingsCollection, DateTime?, QQueryOperations>
+      pinLockoutUntilProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'pinLockoutUntil');
     });
   }
 }

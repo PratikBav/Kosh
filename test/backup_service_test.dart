@@ -54,7 +54,13 @@ void main() {
 
   tearDown(() async {
     await isar.close(deleteFromDisk: true);
-    if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
+    // Windows can still hold a handle briefly after close; the database itself
+    // is already gone, so a failure to remove the empty directory is noise.
+    try {
+      if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
+    } on FileSystemException {
+      // Left for the OS to reap.
+    }
   });
 
   GoalCollection buildGoal(String title, double target) {

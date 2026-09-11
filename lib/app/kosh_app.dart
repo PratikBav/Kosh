@@ -5,6 +5,7 @@ import '../features/security/view/app_lock_screen.dart';
 import '../features/security/viewmodel/security_viewmodel.dart';
 import '../providers/router_provider.dart';
 import '../providers/theme_provider.dart';
+import 'theme/app_colors.dart';
 
 class KoshApp extends ConsumerStatefulWidget {
   const KoshApp({super.key});
@@ -14,11 +15,15 @@ class KoshApp extends ConsumerStatefulWidget {
 }
 
 class _KoshAppState extends ConsumerState<KoshApp> with WidgetsBindingObserver {
+  /// True whenever the app is not in the foreground, so the screenshot the OS
+  /// takes for the app switcher captures the privacy cover instead of the
+  /// user's balances.
+  bool _isObscured = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Initial check
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(securityViewModelProvider.notifier).checkAutoLock();
     });
@@ -32,12 +37,20 @@ class _KoshAppState extends ConsumerState<KoshApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      ref.read(securityViewModelProvider.notifier).checkAutoLock();
-    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      // Just record timestamp when pausing is handled implicitly in checkAutoLock which locks based on lastUnlockedAt
-      // Actually we need to lock if timeout is exceeded, but here we can just lock immediately if timeout is -1
-      // For simplicity, we just rely on checkAutoLock when resumed.
+    switch (state) {
+      case AppLifecycleState.resumed:
+        ref.read(securityViewModelProvider.notifier).checkAutoLock();
+        setState(() => _isObscured = false);
+
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        // Raised synchronously, before the OS captures its snapshot.
+        setState(() => _isObscured = true);
+        ref.read(securityViewModelProvider.notifier).onAppPaused();
+
+      case AppLifecycleState.detached:
+        break;
     }
   }
 
@@ -55,12 +68,42 @@ class _KoshAppState extends ConsumerState<KoshApp> with WidgetsBindingObserver {
       builder: (context, child) {
         return Stack(
           children: [
-            // ignore: use_null_aware_elements
-            if (child != null) child,
-            if (securityState.isLocked) const AppLockScreen(),
+            ?child,
+
+            // Settings are read asynchronously, so without this the real
+            // content would render for a frame or two before a lock applied.
+            if (securityState.isResolvingLock)
+              const _PrivacyCover(showBranding: true)
+            else if (securityState.isLocked)
+              const AppLockScreen()
+            else if (_isObscured)
+              const _PrivacyCover(),
           ],
         );
       },
+    );
+  }
+}
+
+/// Opaque panel that hides app content.
+class _PrivacyCover extends StatelessWidget {
+  const _PrivacyCover({this.showBranding = false});
+
+  final bool showBranding;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.background,
+      child: Center(
+        child: showBranding
+            ? Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 56,
+                color: AppColors.primary,
+              )
+            : const SizedBox.shrink(),
+      ),
     );
   }
 }
