@@ -4,7 +4,9 @@ part 'security_settings_collection.g.dart';
 
 @collection
 class SecuritySettingsCollection {
-  Id id = Isar.autoIncrement;
+  /// Singleton row. Pinned to 1 so repeated reads can never create a second
+  /// settings record that shadows the real one.
+  Id id = 1;
 
   bool isAppLockEnabled = false;
   

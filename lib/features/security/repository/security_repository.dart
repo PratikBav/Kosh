@@ -8,12 +8,15 @@ class SecurityRepository {
 
   SecurityRepository({required this.isar, required this.securityService});
 
+  /// Id of the singleton settings row.
+  static const int _settingsId = 1;
+
   Future<SecuritySettingsCollection> getSettings() async {
-    final settings = await isar.securitySettingsCollections.where().findFirst();
+    final settings = await isar.securitySettingsCollections.get(_settingsId);
     if (settings != null) return settings;
 
     // Create default if not exists
-    final defaultSettings = SecuritySettingsCollection();
+    final defaultSettings = SecuritySettingsCollection()..id = _settingsId;
     await isar.writeTxn(() async {
       await isar.securitySettingsCollections.put(defaultSettings);
     });

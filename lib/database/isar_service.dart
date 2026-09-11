@@ -56,47 +56,131 @@ class IsarService {
     await _seedDatabase(_isar!);
   }
 
+  /// The achievement catalogue. Each icon resolves to
+  /// `assets/icons/achievements/<key>.png`.
+  ///
+  /// Adding an entry here is enough to ship a new achievement — [_seedDatabase]
+  /// inserts only the keys that are missing.
+  static const List<
+      ({
+        String key,
+        String title,
+        String description,
+        int xpReward,
+      })> _achievementSeeds = [
+    (
+      key: 'first_step',
+      title: 'First Step',
+      description: 'Add your first transaction',
+      xpReward: 50,
+    ),
+    (
+      key: 'goal_setter',
+      title: 'Goal Setter',
+      description: 'Create your first goal',
+      xpReward: 100,
+    ),
+    (
+      key: 'consistent_saver',
+      title: 'Consistent Saver',
+      description: 'Maintain a 7-day streak',
+      xpReward: 200,
+    ),
+    (
+      key: 'goal_crusher',
+      title: 'Goal Crusher',
+      description: 'Complete your first goal',
+      xpReward: 500,
+    ),
+    (
+      key: 'wealth_builder',
+      title: 'Wealth Builder',
+      description: 'Save ₹10,000',
+      xpReward: 1000,
+    ),
+    (
+      key: 'financial_warrior',
+      title: 'Financial Warrior',
+      description: 'Save ₹50,000',
+      xpReward: 2000,
+    ),
+    (
+      key: 'century_club',
+      title: 'Century Club',
+      description: 'Record 100 transactions',
+      xpReward: 1500,
+    ),
+    (
+      key: 'financial_master',
+      title: 'Financial Master',
+      description: 'Reach Level 8',
+      xpReward: 5000,
+    ),
+  ];
+
+  /// Ensures the singleton rows and the achievement catalogue exist.
+  ///
+  /// Idempotent by construction: it inserts only what is actually missing
+  /// rather than trusting a flag. `key` carries a unique index, so a seed that
+  /// re-ran would throw and leave the app unable to open the database.
   static Future<void> _seedDatabase(Isar isar) async {
     final settings = await isar.appSettingsCollections.get(1);
-    
-    if (settings == null || !settings.isAchievementSeeded) {
-      await isar.writeTxn(() async {
-        // Create settings
-        final newSettings = AppSettingsCollection()
-          ..id = 1
-          ..isAchievementSeeded = true
-          ..appVersion = '1.0.0';
-        await isar.appSettingsCollections.put(newSettings);
+    final progress = await isar.userProgressCollections.get(1);
+    final streak = await isar.streakCollections.get(1);
 
-        // Create default user progress
-        final progress = UserProgressCollection()
-          ..id = 1
-          ..totalXp = 0
-          ..currentLevel = 1;
-        await isar.userProgressCollections.put(progress);
+    final existingKeys = (await isar.achievementCollections.where().findAll())
+        .map((achievement) => achievement.key)
+        .toSet();
+    final missingAchievements = _achievementSeeds
+        .where((seed) => !existingKeys.contains(seed.key))
+        .toList();
 
-        // Create default streak
-        final streak = StreakCollection()
-          ..id = 1
-          ..currentStreak = 0
-          ..longestStreak = 0;
-        await isar.streakCollections.put(streak);
+    final isComplete = settings != null &&
+        progress != null &&
+        streak != null &&
+        missingAchievements.isEmpty;
+    if (isComplete) return;
 
-        // Seed Achievements
-        final achievements = [
-          AchievementCollection()..key = 'first_step'..title = 'First Step'..description = 'Add your first transaction'..icon = 'assets/icons/achievements/first_step.png'..xpReward = 50,
-          AchievementCollection()..key = 'goal_setter'..title = 'Goal Setter'..description = 'Create your first goal'..icon = 'assets/icons/achievements/goal_setter.png'..xpReward = 100,
-          AchievementCollection()..key = 'consistent_saver'..title = 'Consistent Saver'..description = 'Maintain a 7-day streak'..icon = 'assets/icons/achievements/consistent_saver.png'..xpReward = 200,
-          AchievementCollection()..key = 'goal_crusher'..title = 'Goal Crusher'..description = 'Complete your first goal'..icon = 'assets/icons/achievements/goal_crusher.png'..xpReward = 500,
-          AchievementCollection()..key = 'wealth_builder'..title = 'Wealth Builder'..description = 'Save ₹10,000'..icon = 'assets/icons/achievements/wealth_builder.png'..xpReward = 1000,
-          AchievementCollection()..key = 'financial_warrior'..title = 'Financial Warrior'..description = 'Save ₹50,000'..icon = 'assets/icons/achievements/financial_warrior.png'..xpReward = 2000,
-          AchievementCollection()..key = 'century_club'..title = 'Century Club'..description = 'Record 100 transactions'..icon = 'assets/icons/achievements/century_club.png'..xpReward = 1500,
-          AchievementCollection()..key = 'financial_master'..title = 'Financial Master'..description = 'Reach Level 8'..icon = 'assets/icons/achievements/financial_master.png'..xpReward = 5000,
-        ];
-        
-        await isar.achievementCollections.putAll(achievements);
-      });
-    }
+    await isar.writeTxn(() async {
+      if (settings == null) {
+        await isar.appSettingsCollections.put(
+          AppSettingsCollection()
+            ..id = 1
+            ..isAchievementSeeded = true
+            ..appVersion = '1.0.0',
+        );
+      }
+
+      if (progress == null) {
+        await isar.userProgressCollections.put(
+          UserProgressCollection()
+            ..id = 1
+            ..totalXp = 0
+            ..currentLevel = 1,
+        );
+      }
+
+      if (streak == null) {
+        await isar.streakCollections.put(
+          StreakCollection()
+            ..id = 1
+            ..currentStreak = 0
+            ..longestStreak = 0,
+        );
+      }
+
+      if (missingAchievements.isNotEmpty) {
+        await isar.achievementCollections.putAll([
+          for (final seed in missingAchievements)
+            AchievementCollection()
+              ..key = seed.key
+              ..title = seed.title
+              ..description = seed.description
+              ..icon = 'assets/icons/achievements/${seed.key}.png'
+              ..xpReward = seed.xpReward,
+        ]);
+      }
+    });
   }
 
   /// Collection schemas to register.
