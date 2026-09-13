@@ -59,7 +59,6 @@ Kosh is a modern, privacy-first personal finance application built using Flutter
 
 * Goal Inspiration Images
 * Motivation Boards
-* Personal Financial Aspirations
 * Goal Visualization
 
 
