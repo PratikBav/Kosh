@@ -41,8 +41,6 @@ Kosh is a modern, privacy-first personal finance application built using Flutter
 * Brute-Force Throttling with Escalating Lockout
 * Biometric Authentication (optional shortcut past the PIN)
 * Auto Lock
-* Screenshot and App-Switcher Blocking
-* Secure Local Storage
 
 ### Backup & Recovery
 
